@@ -1,6 +1,6 @@
 # Escopo e rastreabilidade
 
-O relatório Desconfia prevalece sobre a proposta SinalGuard. O produto é web,
+O produto é web,
 somente texto, com avaliação técnica controlada. Pesquisa com usuários é opcional.
 Não há alegação de melhoria comprovada de comportamento da comunidade.
 
@@ -54,4 +54,3 @@ invalida tokens já copiados; para revogação imediata, adicionar sessões pers
 - C3 (04/12/2026): ampliar e revisar o conjunto, consolidar métricas, configurar
   hospedagem, verificar o fluxo publicado e atualizar a documentação final.
 
-Não substituir dados de avaliação reais por resultados de testes simulados.

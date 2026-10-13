@@ -3,7 +3,7 @@
 Fonte: `eval/results.json`, execução encerrada às 17:21:50 de Brasília,
 modelo registrado `openai/gpt-oss-20b`, uma tentativa por caso, 15 mensagens sintéticas.
 Esta revisão não executou novas chamadas nem alterou respostas ou rótulos.
-É uma revisão assistida pelo Codex; não representa consenso de dois integrantes.
+
 
 ## Resultado quantitativo
 

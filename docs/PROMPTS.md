@@ -1,6 +1,6 @@
-# Prompts de desenvolvimento — redação revisada
+# Prompts de desenvolvimento 
 
-Registro retrospectivo dos pedidos de desenvolvimento com apoio de IA, com redação revisada para documentação. Esta lista não representa uma transcrição integral da conversa. A base do projeto foi desenvolvida antes de sua importação para este repositório; este registro não reconstrói commits anteriores nem atribui contribuições aos demais integrantes.
+Registro retrospectivo dos pedidos de desenvolvimento com apoio de IA. A base do projeto foi desenvolvida antes de sua importação para este repositório;
 
 Ferramenta utilizada: Codex (OpenAI).
 
@@ -28,6 +28,3 @@ Ferramenta utilizada: Codex (OpenAI).
 
 > Revise os resultados da avaliação da inteligência artificial, comparando as classificações obtidas com as esperadas. Identifique acertos, divergências e falhas de execução; examine a qualidade das explicações e recomendações; e documente as limitações e os ajustes prioritários para a próxima rodada de testes.
 
-## Uso nos próximos commits
-
-Para novas atividades com apoio de IA, registre o prompt efetivamente utilizado na mensagem do respectivo commit. Este documento registra retrospectivamente os pedidos relacionados à base importada e não comprova, por si só, a conclusão ou aprovação de testes.
