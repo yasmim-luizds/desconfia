@@ -7,3 +7,16 @@
 .verdict.medium h2{color:#895500}
 .delete-confirm button:first-of-type{background:#c6283d;border-color:#c6283d;color:#fff}
 .icon-button:hover:not(:disabled){color:#c6283d;background:#fff0f1}
+
+/* Contraste mínimo de 4,5:1 (WCAG AA) nos textos secundários. Só cores. */
+.micro{color:#596f8a}
+.chat>span{color:#4d74a7}
+.chat small{color:#5c7393}
+.illustration-caption{color:#4c688f}
+footer{color:#5a6f8b}
+.composer-meta,.history-date{color:#5a7394}
+.auth-card small,.checkbox small{color:#5d7391}
+.indicator>span{color:#3973be}
+.indicator blockquote{color:#5c7391}
+.aside-note h3{color:#3670b0}
+input::placeholder,textarea::placeholder{color:#5b7292}
