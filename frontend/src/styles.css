@@ -30,3 +30,13 @@ footer,footer p,footer>span:last-child{font-size:12px}
 .composer-meta,.checkbox small,.auth-card small,.history-date{font-size:12px}
 .demo-banner{font-size:12px}
 .steps p{font-size:13px}
+
+/* Histórico: textos longos não esticam o cartão; confirmação de exclusão mais clara. */
+.history-list{grid-template-columns:repeat(2,minmax(0,1fr))}
+.history-card{min-width:0}
+.icon-button{padding:13px;right:10px;top:11px}
+.delete-confirm{display:flex;flex-wrap:wrap;gap:10px;font-size:13px;margin-top:18px;padding-top:16px}
+.delete-confirm>span{flex-basis:100%;font-weight:600;color:#142b50;line-height:1.5}
+.delete-confirm small{flex-basis:100%;font-size:12px;color:#526783}
+.delete-confirm button{margin:0;min-height:44px;padding:10px 18px;border-radius:8px;font-size:13px;font-weight:600;color:#142b50}
+@media(max-width:650px){.history-list{grid-template-columns:minmax(0,1fr)}.delete-confirm button{flex:1}}
