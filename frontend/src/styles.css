@@ -20,3 +20,13 @@ footer{color:#5a6f8b}
 .indicator blockquote{color:#5c7391}
 .aside-note h3{color:#3670b0}
 input::placeholder,textarea::placeholder{color:#5b7292}
+
+/* Tamanho mínimo dos textos auxiliares. */
+.illustration-caption{font-size:11px;letter-spacing:.8px}
+.chat>span,.chat small{font-size:11px}
+.micro{font-size:13px}
+.eyebrow,.auth-card .eyebrow{font-size:11px}
+footer,footer p,footer>span:last-child{font-size:12px}
+.composer-meta,.checkbox small,.auth-card small,.history-date{font-size:12px}
+.demo-banner{font-size:12px}
+.steps p{font-size:13px}
