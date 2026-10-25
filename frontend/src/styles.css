@@ -53,3 +53,8 @@ footer,footer p,footer>span:last-child{font-size:12px}
 .recommendation{border-left:4px solid #1762d3;padding:20px 22px}
 .recommendation h3{font-size:15px}
 .recommendation p{font-size:14px}
+
+/* Resultado: origem da análise em destaque. */
+.page-heading p .origin{display:inline-block;padding:2px 10px;border-radius:999px;font-weight:600;font-size:13px}
+.page-heading p .origin.ai{background:#dbeaff;color:#0f3f9e}
+.page-heading p .origin.demo{background:#fff4d6;color:#805500}
