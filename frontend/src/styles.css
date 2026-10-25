@@ -43,3 +43,13 @@ footer,footer p,footer>span:last-child{font-size:12px}
 
 /* Aviso de erro sempre visível no topo da tela quando aparece. */
 .alert{position:sticky;top:8px;z-index:20;font-size:14px;line-height:1.5;box-shadow:0 6px 18px #b4232e26}
+
+/* Tela de resultado: hierarquia e leitura. */
+.verdict .badge{display:inline-flex;align-items:center;gap:8px;font-size:14px;padding:8px 14px;border-radius:8px}
+.verdict p{font-size:15px}
+.indicator h3{font-size:15px}
+.indicator blockquote{font-size:13px}
+.indicator>span{font-size:13px}
+.recommendation{border-left:4px solid #1762d3;padding:20px 22px}
+.recommendation h3{font-size:15px}
+.recommendation p{font-size:14px}
