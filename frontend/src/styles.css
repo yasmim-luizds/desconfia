@@ -61,3 +61,7 @@ footer,footer p,footer>span:last-child{font-size:12px}
 
 /* Resultado: "O que fazer agora" logo após o veredito. */
 .verdict+.recommendation{margin:0 0 20px}
+
+/* Foco visível nos campos e estado selecionado que não depende só da cor. */
+input:not([type=checkbox]):focus-visible,textarea:focus-visible{outline:3px solid #2684ff;outline-offset:2px}
+.feedback-options button[aria-pressed=true]{font-weight:700}
