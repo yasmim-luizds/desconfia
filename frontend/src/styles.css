@@ -68,3 +68,7 @@ input:not([type=checkbox]):focus-visible,textarea:focus-visible{outline:3px soli
 
 /* Histórico: prévia da mensagem sem usar título. */
 .history-title{display:block;font-family:Manrope,sans-serif;font-size:14px;font-weight:600;line-height:1.7;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin:18px 0}
+
+/* Mensagens de validação por campo. */
+.field-error{display:block;margin-top:6px;font-size:13px;line-height:1.5;color:#b4232e}
+.auth-card input[aria-invalid=true]{border-color:#c6283d}
