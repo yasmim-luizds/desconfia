@@ -65,3 +65,6 @@ footer,footer p,footer>span:last-child{font-size:12px}
 /* Foco visível nos campos e estado selecionado que não depende só da cor. */
 input:not([type=checkbox]):focus-visible,textarea:focus-visible{outline:3px solid #2684ff;outline-offset:2px}
 .feedback-options button[aria-pressed=true]{font-weight:700}
+
+/* Histórico: prévia da mensagem sem usar título. */
+.history-title{display:block;font-family:Manrope,sans-serif;font-size:14px;font-weight:600;line-height:1.7;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin:18px 0}
