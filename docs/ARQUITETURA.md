@@ -50,3 +50,10 @@ Pytest verifica contratos e falhas com serviço externo simulado. Vitest verific
 interações das telas. A avaliação em `eval/` chama a Groq real e mede classificações;
 revisão humana complementa a análise de explicações, recomendações e alucinações.
 Uma suíte de testes passando não comprova qualidade do modelo de IA.
+
+A rodada V2 de 24/10/2026 está registrada em `eval/results-v2.json` para 15 casos
+sintéticos. A revisão individual foi entregue em `docs/REVISAO_QUALITATIVA_27.10.2026.md`
+na branch `testes-c2` e está proposta no PR #5; ainda não foi integrada a `base-c2`.
+A segunda revisão independente e o consenso ainda estão pendentes. Esses resultados
+são exploratórios e não comprovam precisão geral, segurança ou resistência ampla a
+ataques.
