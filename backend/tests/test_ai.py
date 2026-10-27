@@ -66,3 +66,34 @@ def test_untrusted_message_is_separate(monkeypatch):
     assert captured['messages'][0]['content'] == ai.SYSTEM_PROMPT
     assert json.loads(captured['messages'][1]['content'])['message'] == text
     assert 'tools' not in captured
+
+
+def test_prompt_v2_colloquial_and_safety_guidance():
+    prompt = ai.SYSTEM_PROMPT.lower()
+    assert ai.PROMPT_VERSION == '2.0.0'
+    for fragment in ('agr', 'abreviações', 'ortografia', 'risco', 'português', 'nunca garanta', 'não invente'):
+        assert fragment in prompt
+
+
+def test_abbreviated_text_is_passed_unchanged(monkeypatch):
+    monkeypatch.setenv('GROQ_API_KEY', 'test-key')
+    text = 'mae num novo aq, manda pix agr pra conta de amigo, n liga'
+    received = {}
+    def handler(request):
+        received.update(json.loads(request.content))
+        verdict = {**VERDICT, 'indicators': []}
+        return httpx.Response(200, json=completion(verdict))
+    client_type = httpx.Client
+    monkeypatch.setattr(ai.httpx, 'Client', lambda **kw: client_type(transport=httpx.MockTransport(handler)))
+    ai.analyze(text)
+    assert json.loads(received['messages'][1]['content'])['message'] == text
+    assert received['messages'][0]['content'] == ai.SYSTEM_PROMPT
+
+
+def test_exact_evidence_with_abbreviation(monkeypatch):
+    verdict = {**VERDICT, 'indicators': [
+        {'category': 'financial_request', 'description': 'Pedido de transferência', 'evidence': 'manda pix agr'}]}
+    mock_provider(monkeypatch, payload=completion(verdict))
+    assert ai.analyze('manda pix agr').indicators[0].evidence == 'manda pix agr'
+    with pytest.raises(ai.AIError):
+        ai.analyze('manda PIX agora')
