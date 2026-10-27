@@ -62,10 +62,10 @@ Verificar o funcionamento das principais funcionalidades da aplicação Desconfi
 - TF-13: [Navegação por teclado](evidencias/TF-13-navegacao-teclado.png)
 
 ## 5. Defeitos identificados
-Registrar ID do teste, descrição, passos de reprodução, comportamento observado, comportamento esperado e link da Issue correspondente.
+Durante a execução dos testes funcionais TF-01 a TF-13, não foram identificados defeitos reproduzíveis que exigissem abertura de Issues. As limitações de cobertura e os pontos não verificados estão descritos na seção 7.
 
 ## 6. Retestes após correções
-Registrar os cenários repetidos, a versão testada, o resultado e as evidências.
+Não foram realizados retestes específicos após correções de defeitos identificados nesta rodada, pois não houve correções decorrentes dos testes funcionais executados. Os testes foram realizados sobre a versão integrada disponível na branch testes-c2.
 
 ## 7. Limitações e pendências
 - TF-12: O tratamento de falhas da IA foi verificado por testes automatizados com respostas simuladas da API Groq. Foram aprovados 16 testes do arquivo backend/tests/test_ai.py, com um aviso de depreciação. Não foi realizada uma simulação de indisponibilidade real da Groq nem a validação da mensagem de erro pela interface, pois a aplicação foi executada em modo demonstração.
