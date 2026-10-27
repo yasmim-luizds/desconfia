@@ -72,3 +72,6 @@ input:not([type=checkbox]):focus-visible,textarea:focus-visible{outline:3px soli
 /* Mensagens de validação por campo. */
 .field-error{display:block;margin-top:6px;font-size:13px;line-height:1.5;color:#b4232e}
 .auth-card input[aria-invalid=true]{border-color:#c6283d}
+
+/* Erro de login e cadastro exibido junto ao botão do formulário. */
+.form-error{border:1px solid #f49a9a;background:#fff0f0;border-radius:9px;color:#b4232e;padding:13px 18px;margin-top:20px;font-size:14px;line-height:1.5}

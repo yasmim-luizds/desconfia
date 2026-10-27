@@ -52,3 +52,18 @@ it('permite mostrar e ocultar a senha', async () => {
   await user.click(screen.getByLabelText('Mostrar senha'));
   expect(senha).toHaveAttribute('type', 'password');
 });
+it('mostra o erro de login junto ao botão, e não no topo da página', async () => {
+  request.mockImplementation(async path => {
+    if (path === '/config') return { ai_mode: 'groq' };
+    if (path === '/auth/login') throw Object.assign(new Error('E-mail ou senha inválidos.'), { status: 401 });
+    return null;
+  });
+  const user = userEvent.setup(); render(<App/>);
+  await user.click(screen.getByRole('button', { name: 'Entrar', exact: true }));
+  await user.type(screen.getByLabelText('E-mail'), 'teste@example.com');
+  await user.type(screen.getByLabelText('Senha', { exact: true }), 'SenhaErrada1!');
+  await user.click(screen.getAllByRole('button', { name: 'Entrar', exact: true }).at(-1));
+  const alerta = await screen.findByRole('alert');
+  expect(alerta).toHaveTextContent('E-mail ou senha inválidos');
+  expect(alerta.closest('form')).not.toBeNull();
+});
