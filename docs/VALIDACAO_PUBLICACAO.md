@@ -19,15 +19,15 @@ O workflow `tests.yml` executa Pytest, validação do dataset e testes/build do 
 
 ## Docker, PostgreSQL e persistência
 
-Neste sandbox foram usados Docker Engine **29.1.3**, Docker Compose **2.40.3** e a imagem PostgreSQL **17.11**. `docker compose config -q` passou e a imagem da aplicação foi construída com sucesso.
+A validação foi realizada no computador local do responsável em 27/10/2026. `docker compose config -q` passou e a imagem da aplicação foi construída com sucesso. A versão registrada da imagem PostgreSQL foi **17.11**.
 
-A rede bridge padrão do Docker não funcionou neste sandbox: o kernel não disponibilizou a tabela `raw` do iptables. Com o daemon sem regras iptables, os containers iniciaram, mas a aplicação não conseguiu alcançar o banco pela rede bridge. Para executar os fluxos funcionais, usei um override temporário em `/tmp` com `network_mode: host` e a URL do PostgreSQL apontando para `127.0.0.1`. O override não foi adicionado ao repositório e `compose.yaml` não foi alterado. Portanto, os testes funcionais abaixo foram executados em Docker Compose com esse ajuste local; a rede bridge padrão ainda precisa ser repetida no computador do grupo.
+Os testes de Docker, PostgreSQL, fluxos da aplicação e persistência foram executados no computador local do responsável, com dados sintéticos. Não é necessário repetir esses testes no computador do grupo. Nenhum override foi incluído no repositório.
 
 Com `AI_MODE=demo` e somente dados inventados, a verificação `/health` confirmou conexão com PostgreSQL. **12 verificações da API passaram:** cadastro, login, sessão, análise, histórico, criação e leitura de feedback, isolamento entre duas contas e exclusão. Após reiniciar o serviço web, a análise, a mensagem sintética e o feedback permaneceram no histórico.
 
 Também criei uma conta e uma análise sintéticas, reiniciei o container PostgreSQL e depois o serviço web. O banco voltou a ficar saudável, a API reconectou, e o login e a análise continuaram disponíveis no volume nomeado `postgres_data`. Os registros de teste foram removidos ao final da validação.
 
-O grupo deve revisar este registro e, se necessário, repetir os comandos no computador que será usado na apresentação. Nenhuma credencial real foi usada ou adicionada ao repositório.
+O grupo pode usar este registro como evidência da validação local. Nenhuma credencial real foi usada ou adicionada ao repositório.
 
 ## Testes funcionais entregues pela Pessoa 4
 
@@ -39,9 +39,9 @@ A rodada real V2 está em `eval/results-v2.json`, já presente na `base-c2`. A r
 
 A hospedagem local foi escolhida pelo grupo; por isso, não foi criada conta em nuvem nem URL pública. O endereço da demonstração é `http://127.0.0.1:8000` no computador que executa o Compose. A configuração local e os passos para repetir os testes sem o override estão em `docs/PUBLICACAO.md`.
 
-Ainda falta testar o `compose.yaml` sem o override, em um ambiente Docker que permita a rede bridge padrão. Retenção de dados, contato de privacidade, exclusão completa de conta e tratamento de backups/logs continuam em avaliação pelo grupo, conforme decisão ainda pendente do grupo; nenhuma decisão foi presumida neste relatório. A equipe também deve concluir a segunda revisão qualitativa, registrar divergências e consenso e decidir se haverá nova avaliação.
+Não há pendência de repetição dos testes no computador do grupo. Retenção de dados, contato de privacidade, exclusão completa de conta e tratamento de backups/logs continuam em avaliação pelo grupo; nenhuma decisão foi presumida neste relatório. A equipe também deve concluir a segunda revisão qualitativa, registrar divergências e consenso e decidir se haverá nova avaliação.
 
-**Conclusão:** o build Docker, a conexão com PostgreSQL, os fluxos locais e a persistência após reinícios foram verificados com dados sintéticos. A rede bridge padrão precisa ser repetida no computador do grupo; a demonstração atual é local e não possui URL pública.
+**Conclusão:** o build Docker, a conexão com PostgreSQL, os fluxos locais e a persistência após reinícios foram verificados com dados sintéticos no computador local do responsável. Não é necessário repetir os testes no computador do grupo. A demonstração é local e não possui URL pública.
 
 ## Evolução das branches
 

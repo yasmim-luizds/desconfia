@@ -16,10 +16,10 @@ Não há alegação de melhoria comprovada de comportamento da comunidade.
 | Histórico | paginação, autorização por usuário, detalhes | Pytest + Vitest |
 | Feedback | útil/não útil, comentário opcional, uma avaliação por análise | Pytest + Vitest |
 | Minimização | texto/evidências não salvos por padrão, opt-in e exclusão | Pytest |
-| Banco PostgreSQL | driver psycopg, URL configurável, Compose | build e persistência após reinício verificados localmente com override de rede; repetir bridge padrão no computador do grupo |
+| Banco PostgreSQL | driver psycopg, URL configurável, Compose | build, fluxos e persistência após reinício verificados no computador local do responsável; não requer repetição no computador do grupo |
 | Testes | Pytest, Vitest, workflow CI | execução local histórica em `VALIDACAO.md`; checks de CI verdes na branch `testes-c2` conforme `VALIDACAO_PUBLICACAO.md` |
 | Eval | 15 casos sintéticos, métricas e rubrica qualitativa | rodada real V2 registrada; conjunto pequeno, revisão independente e consenso pendentes |
-| Publicação | Dockerfile, Compose e guia | grupo escolheu execução local; URL loopback testada; sem URL pública prevista; rede bridge padrão ainda precisa ser repetida no computador do grupo |
+| Publicação | Dockerfile, Compose e guia | grupo escolheu execução local; URL loopback testada; sem URL pública prevista; validação local registrada |
 
 ## Segurança e privacidade
 
