@@ -1,7 +1,7 @@
 # Melhorias de interface e acessibilidade
 
 **Responsável:** Gustavo Rissoli (frente de interface e acessibilidade)
-**Branches:** `melhoria-interface` (PR #3, já integrado na `base-c2`) e `melhoria-interface-2` (PR 2/2 a abrir)
+**Branches:** `melhoria-interface` (PR #3, já integrado na `base-c2`) e `melhoria-interface-2` (PR [#4](https://github.com/yasmim-luizds/desconfia/pull/4))
 **Arquivos principais:** `frontend/src/App.jsx`, `frontend/src/styles.css`, `frontend/src/api.js` e os testes do frontend
 **Registro de uso de IA:** `docs/PROMPTS_INTERFACE.md`
 
