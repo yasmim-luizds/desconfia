@@ -77,7 +77,7 @@ Entre novamente e confirme que a conta e os registros de teste continuam no hist
 
 Em 27/10/2026, a imagem da aplicação foi construída, PostgreSQL 17.11 ficou saudável e 12 verificações da API passaram com dados sintéticos. A persistência foi confirmada após reiniciar o serviço web e, separadamente, o container PostgreSQL e o serviço web.
 
-O sandbox em que esses testes foram executados bloqueou a rede bridge padrão do Docker. Para concluir os fluxos funcionais, foi usado um override temporário com rede host, sem alterar `compose.yaml`. Por isso, repita `docker compose up --build -d` sem override no computador do grupo antes da apresentação. O relatório está em `docs/VALIDACAO_PUBLICACAO.md`.
+Os testes de Docker, PostgreSQL, fluxos da aplicação e persistência foram feitos no computador local do responsável, com dados sintéticos. Não há necessidade de repeti-los no computador do grupo. O relatório está em `docs/VALIDACAO_PUBLICACAO.md`.
 
 ## 7. Privacidade e decisões do grupo
 

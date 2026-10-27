@@ -190,4 +190,4 @@ O grupo escolheu executar a aplicação localmente. A demonstração fica em `ht
 
 Na validação local de 27/10/2026, a imagem Docker foi construída e os fluxos foram verificados com dados sintéticos: cadastro, login, análise, histórico, feedback, isolamento entre contas e exclusão. O PostgreSQL ficou saudável. Depois de reiniciar o serviço web, a análise e o feedback continuaram no histórico. Também foram reiniciados o container PostgreSQL e o serviço web; a conta e a análise continuaram no volume. Ao todo, passaram 12 verificações de API. Os detalhes estão em `docs/VALIDACAO_PUBLICACAO.md`.
 
-O sandbox bloqueou a rede bridge padrão do Docker. Para executar os testes funcionais, foi usado um ajuste temporário de rede, sem alterar `compose.yaml`. Antes da apresentação, falta repetir `docker compose up --build -d` no computador do grupo usando a rede padrão.
+A validação de Docker, PostgreSQL e persistência foi realizada no computador local do responsável, com dados sintéticos. Não é necessário repetir esses testes no computador do grupo. O ambiente de demonstração escolhido é local, sem URL pública.
