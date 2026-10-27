@@ -40,3 +40,38 @@ footer,footer p,footer>span:last-child{font-size:12px}
 .delete-confirm small{flex-basis:100%;font-size:12px;color:#526783}
 .delete-confirm button{margin:0;min-height:44px;padding:10px 18px;border-radius:8px;font-size:13px;font-weight:600;color:#142b50}
 @media(max-width:650px){.history-list{grid-template-columns:minmax(0,1fr)}.delete-confirm button{flex:1}}
+
+/* Aviso de erro sempre visível no topo da tela quando aparece. */
+.alert{position:sticky;top:8px;z-index:20;font-size:14px;line-height:1.5;box-shadow:0 6px 18px #b4232e26}
+
+/* Tela de resultado: hierarquia e leitura. */
+.verdict .badge{display:inline-flex;align-items:center;gap:8px;font-size:14px;padding:8px 14px;border-radius:8px}
+.verdict p{font-size:15px}
+.indicator h3{font-size:15px}
+.indicator blockquote{font-size:13px}
+.indicator>span{font-size:13px}
+.recommendation{border-left:4px solid #1762d3;padding:20px 22px}
+.recommendation h3{font-size:15px}
+.recommendation p{font-size:14px}
+
+/* Resultado: origem da análise em destaque. */
+.page-heading p .origin{display:inline-block;padding:2px 10px;border-radius:999px;font-weight:600;font-size:13px}
+.page-heading p .origin.ai{background:#dbeaff;color:#0f3f9e}
+.page-heading p .origin.demo{background:#fff4d6;color:#805500}
+
+/* Resultado: "O que fazer agora" logo após o veredito. */
+.verdict+.recommendation{margin:0 0 20px}
+
+/* Foco visível nos campos e estado selecionado que não depende só da cor. */
+input:not([type=checkbox]):focus-visible,textarea:focus-visible{outline:3px solid #2684ff;outline-offset:2px}
+.feedback-options button[aria-pressed=true]{font-weight:700}
+
+/* Histórico: prévia da mensagem sem usar título. */
+.history-title{display:block;font-family:Manrope,sans-serif;font-size:14px;font-weight:600;line-height:1.7;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin:18px 0}
+
+/* Mensagens de validação por campo. */
+.field-error{display:block;margin-top:6px;font-size:13px;line-height:1.5;color:#b4232e}
+.auth-card input[aria-invalid=true]{border-color:#c6283d}
+
+/* Erro de login e cadastro exibido junto ao botão do formulário. */
+.form-error{border:1px solid #f49a9a;background:#fff0f0;border-radius:9px;color:#b4232e;padding:13px 18px;margin-top:20px;font-size:14px;line-height:1.5}
