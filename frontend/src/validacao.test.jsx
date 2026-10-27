@@ -42,3 +42,13 @@ it('mostra o erro de senhas diferentes abaixo do campo de confirmação', async 
   expect(screen.getByRole('alert')).toHaveTextContent('As senhas precisam ser iguais');
   expect(request.mock.calls.some(([path]) => path === '/auth/register')).toBe(false);
 });
+it('permite mostrar e ocultar a senha', async () => {
+  const user = userEvent.setup(); render(<App/>);
+  await user.click(screen.getByRole('button', { name: 'Entrar', exact: true }));
+  const senha = screen.getByLabelText('Senha', { exact: true });
+  expect(senha).toHaveAttribute('type', 'password');
+  await user.click(screen.getByLabelText('Mostrar senha'));
+  expect(senha).toHaveAttribute('type', 'text');
+  await user.click(screen.getByLabelText('Mostrar senha'));
+  expect(senha).toHaveAttribute('type', 'password');
+});
