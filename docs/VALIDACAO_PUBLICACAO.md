@@ -31,13 +31,13 @@ O grupo pode usar este registro como evidência da validação local. Nenhuma cr
 
 ## Testes funcionais entregues pela Pessoa 4
 
-O relatório funcional na branch `testes-c2`, em `docs/TESTES_FUNCIONAIS.md`, registra execução local em modo demonstração, em 27/10/2026, com cadastro, login/logout, análise sintética, histórico, feedback, exclusão e isolamento entre contas. O PR #5 para `base-c2` não está integrado nesta cópia; os resultados são da integrante responsável e não correspondem aos testes executados nesta sessão.
+O relatório funcional na branch `testes-c2`, em `docs/TESTES_FUNCIONAIS.md`, registra execução local em modo demonstração, em 27/10/2026, com cadastro, login/logout, análise sintética, histórico, feedback, exclusão e isolamento entre contas. O PR #5 para `base-c2` não está integrado nesta cópia; os resultados são da integrante responsável e distintos da validação de Docker e PostgreSQL registrada neste documento.
 
 A rodada real V2 está em `eval/results-v2.json`, já presente na `base-c2`. A revisão individual está em `docs/REVISAO_QUALITATIVA_27.10.2026.md` na branch `testes-c2`. A segunda revisão e o consenso com a Pessoa 2 continuam pendentes. A amostra tem 15 casos sintéticos e não demonstra desempenho geral do modelo.
 
 ## Hospedagem local e decisões em aberto
 
-A hospedagem local foi escolhida pelo grupo; por isso, não foi criada conta em nuvem nem URL pública. O endereço da demonstração é `http://127.0.0.1:8000` no computador que executa o Compose. A configuração local e os passos para repetir os testes sem o override estão em `docs/PUBLICACAO.md`.
+A hospedagem local foi escolhida pelo grupo; por isso, não foi criada conta em nuvem nem URL pública. O endereço da demonstração é `http://127.0.0.1:8000` no computador que executa o Compose. A configuração local e os passos para executar a demonstração estão em `docs/PUBLICACAO.md`.
 
 Não há pendência de repetição dos testes no computador do grupo. Retenção de dados, contato de privacidade, exclusão completa de conta e tratamento de backups/logs continuam em avaliação pelo grupo; nenhuma decisão foi presumida neste relatório. A equipe também deve concluir a segunda revisão qualitativa, registrar divergências e consenso e decidir se haverá nova avaliação.
 

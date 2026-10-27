@@ -57,8 +57,4 @@ Em 27/10/2026, o Dockerfile foi construído e o PostgreSQL 17.11 ficou saudável
 Doze verificações da API passaram com dados sintéticos. A conta, a análise e o
 feedback permaneceram após reiniciar o serviço web; a conta e a análise também
 continuaram no volume após reiniciar o container PostgreSQL e o serviço web.
-Como a rede bridge padrão foi bloqueada pelas restrições do sandbox, os fluxos foram
-testados com um override temporário de rede host, sem alterar `compose.yaml`.
-
-A rede bridge padrão precisa ser validada no computador do grupo. A hospedagem escolhida pelo grupo é local; portanto, não há URL pública planejada.
-Os resultados locais e os detalhes da rede estão em `VALIDACAO_PUBLICACAO.md`.
+A validação de Docker, PostgreSQL, fluxos e persistência foi realizada no computador local do responsável, com dados sintéticos. Não é necessário repetir esses testes no computador do grupo. A hospedagem escolhida pelo grupo é local; portanto, não há URL pública planejada. Os resultados estão em `VALIDACAO_PUBLICACAO.md`.
