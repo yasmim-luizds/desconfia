@@ -1,57 +1,85 @@
-# Validação de publicação — Desconfia
+# Validação da demonstração e do PostgreSQL — Desconfia
 
-**Data:** 27/10/2026
-**Branch de trabalho:** `publicacao-documentacao`, baseada na `base-c2` (`3e1c276`)
-**Hospedagem escolhida pelo grupo:** local, informada por José em 27/10/2026
-**Endereço local:** `http://127.0.0.1:8000` (acessível apenas no computador que executa a aplicação)
-**URL pública:** não se aplica à decisão atual de hospedagem local
+**Testes de Docker/PostgreSQL:** 27/10/2026, no computador local do responsável pela validação, conforme informado ao grupo.
+**Atualização deste registro:** 29/10/2026.
+**Branch de trabalho:** `publicacao-documentacao`, proposta no [PR #6](https://github.com/yasmim-luizds/desconfia/pull/6).
+**Base atualizada:** `base-c2`, commit `1702dc6`, que inclui o merge do PR #5.
+
+## Escopo da execução local e da hospedagem
+
+A demonstração local escolhida para a C2 não é uma publicação na nuvem. Na instalação manual, quando `DATABASE_URL` não está definida, o back-end usa SQLite em `backend/desconfia_local.db`. Essa é a configuração informada para a aplicação no computador da Yasmin.
+
+A validação de PostgreSQL descrita abaixo é uma execução separada com Docker Compose no computador local do responsável. O Compose configura PostgreSQL e passa `DATABASE_URL` ao serviço web. Portanto, o resultado dessa validação não significa que a instalação manual no computador da Yasmin esteja usando PostgreSQL.
+
+A hospedagem local está definida para a demonstração da C2. O planejamento da C3 ainda prevê configurar hospedagem, testar o fluxo publicado e registrar a URL e as condições do provedor. Provedor e URL pública da C3 ainda não estão definidos neste registro.
 
 ## Testes automatizados
 
-As dependências foram instaladas em `.venv` (Python 3.12.3) e com o lockfile do front-end (Node 22.23.4, pnpm 11.25.0):
+Na execução registrada nesta branch, os resultados foram:
 
 - Pytest: **33 aprovados**, com 34 avisos de depreciação.
 - Vitest: **17 aprovados**.
-- Build Vite: **aprovado**.
-- Validação do conjunto sintético: **15 casos válidos**, sem chamadas à IA e sem cálculo de métricas.
+- Build do Vite: **aprovado**.
+- Validação do conjunto sintético: **15 casos válidos**, sem chamadas à IA nem cálculo de métricas.
 
-O workflow `tests.yml` executa Pytest, validação do dataset e testes/build do front-end. As execuções públicas observadas na branch `testes-c2`, no commit `c7ae4d6`, terminaram com sucesso: [execução 40559750063](https://github.com/yasmim-luizds/desconfia/actions/runs/40559750063) e [execução 40559106002](https://github.com/yasmim-luizds/desconfia/actions/runs/40559106002). Esses checks não testam publicação nem execução do serviço com PostgreSQL.
+O workflow `tests.yml` executa Pytest, validação do conjunto e testes e build do front-end. As verificações automatizadas não comprovam a execução do PostgreSQL nem uma publicação na nuvem.
 
-## Docker, PostgreSQL e persistência
+## Resultado informado para Docker, PostgreSQL e persistência
 
-A validação foi realizada no computador local do responsável em 27/10/2026. `docker compose config -q` passou e a imagem da aplicação foi construída com sucesso. A versão registrada da imagem PostgreSQL foi **17.11**.
+O registro recebido informa que, em 27/10/2026, a imagem Docker foi construída, o PostgreSQL 17.11 ficou saudável e 12 verificações da API passaram com dados sintéticos. O resumo relata cadastro, login, sessão, análise, histórico, feedback, isolamento entre contas e exclusão. Também registra que os dados continuaram disponíveis após reiniciar o serviço web e após reiniciar o container PostgreSQL e depois o serviço web.
 
-Os testes de Docker, PostgreSQL, fluxos da aplicação e persistência foram executados no computador local do responsável, com dados sintéticos. Não é necessário repetir esses testes no computador do grupo. Nenhum override foi incluído no repositório.
+O ZIP e os arquivos recebidos não continham a saída bruta do terminal nem capturas da execução do Docker/PostgreSQL. Por isso, este documento registra os resultados informados, mas não apresenta uma transcrição literal como se tivesse sido preservada. As capturas já existentes em `docs/evidencias/` são dos testes funcionais de interface da Pessoa 4; elas não demonstram por si só a conexão ou a persistência em PostgreSQL.
 
-Com `AI_MODE=demo` e somente dados inventados, a verificação `/health` confirmou conexão com PostgreSQL. **12 verificações da API passaram:** cadastro, login, sessão, análise, histórico, criação e leitura de feedback, isolamento entre duas contas e exclusão. Após reiniciar o serviço web, a análise, a mensagem sintética e o feedback permaneceram no histórico.
+Para conferir e registrar a evidência do PostgreSQL no computador em que o Compose foi executado, os comandos abaixo não exibem senha nem URL de conexão:
 
-Também criei uma conta e uma análise sintéticas, reiniciei o container PostgreSQL e depois o serviço web. O banco voltou a ficar saudável, a API reconectou, e o login e a análise continuaram disponíveis no volume nomeado `postgres_data`. Os registros de teste foram removidos ao final da validação.
+```bash
+docker compose config -q
+docker compose up --build -d
+docker compose ps
+curl -fsS http://127.0.0.1:8000/health
+docker compose exec database pg_isready -U desconfia -d desconfia
+docker compose exec web python -c "from app.database import engine; print(engine.dialect.name)"
+```
 
-O grupo pode usar este registro como evidência da validação local. Nenhuma credencial real foi usada ou adicionada ao repositório.
+Com uma conta e registros sintéticos criados, conferir o histórico pela aplicação depois de cada reinício:
 
-## Testes funcionais entregues pela Pessoa 4
+```bash
+docker compose restart web
+curl -fsS http://127.0.0.1:8000/health
+# Conferir na interface se a análise e o feedback continuam no histórico.
 
-O relatório funcional na branch `testes-c2`, em `docs/TESTES_FUNCIONAIS.md`, registra execução local em modo demonstração, em 27/10/2026, com cadastro, login/logout, análise sintética, histórico, feedback, exclusão e isolamento entre contas. O PR #5 para `base-c2` não está integrado nesta cópia; os resultados são da integrante responsável e distintos da validação de Docker e PostgreSQL registrada neste documento.
+docker compose restart database
+# Aguardar o banco ficar saudável e verificar:
+docker compose exec database pg_isready -U desconfia -d desconfia
+docker compose restart web
+curl -fsS http://127.0.0.1:8000/health
+# Entrar de novo e conferir se a conta e os registros sintéticos continuam no histórico.
+```
 
-A rodada real V2 está em `eval/results-v2.json`, já presente na `base-c2`. A revisão individual está em `docs/REVISAO_QUALITATIVA_27.10.2026.md` na branch `testes-c2`. A segunda revisão e o consenso com a Pessoa 2 continuam pendentes. A amostra tem 15 casos sintéticos e não demonstra desempenho geral do modelo.
+Para identificar o banco usado pela instalação manual no computador da gravação, execute dentro de `backend/`:
 
-## Hospedagem local e decisões em aberto
+```bash
+python -c "from app.database import engine; print(engine.dialect.name)"
+```
 
-A hospedagem local foi escolhida pelo grupo; por isso, não foi criada conta em nuvem nem URL pública. O endereço da demonstração é `http://127.0.0.1:8000` no computador que executa o Compose. A configuração local e os passos para executar a demonstração estão em `docs/PUBLICACAO.md`.
+O comando imprime apenas o tipo do banco, por exemplo `sqlite` ou `postgresql`, sem revelar credenciais. Para completar a evidência pedida pela professora, anexar as saídas ou capturas reais desses comandos no ambiente em que os testes foram executados, removendo qualquer dado pessoal e segredo. Não inventar nem substituir essa evidência por saídas esperadas.
 
-Não há pendência de repetição dos testes no computador do grupo. Retenção de dados, contato de privacidade, exclusão completa de conta e tratamento de backups/logs continuam em avaliação pelo grupo; nenhuma decisão foi presumida neste relatório. A equipe também deve concluir a segunda revisão qualitativa, registrar divergências e consenso e decidir se haverá nova avaliação.
+## Conferência antes da gravação
 
-**Conclusão:** o build Docker, a conexão com PostgreSQL, os fluxos locais e a persistência após reinícios foram verificados com dados sintéticos no computador local do responsável. Não é necessário repetir os testes no computador do grupo. A demonstração é local e não possui URL pública.
+Não é necessário repetir toda a bateria de testes. No computador usado para a gravação, iniciar a configuração que será apresentada e fazer uma verificação curta: confirmar `/health`, confirmar o modo em `/config`, entrar com uma conta sintética, fazer uma análise demo, conferir histórico e feedback e excluir o registro de teste. Se a demonstração usar a instalação manual, confirmar também o banco ativo com o comando acima. Se usar Docker Compose, confirmar `pg_isready` e que o banco ativo é `postgresql`.
 
-## Evolução das branches
+## Evidências funcionais já integradas
 
-| Frente | Branch/ref observado | Situação em 27/10/2026 |
-|---|---|---|
-| Integração da C2 | `base-c2` (`3e1c276`) | Base com app, melhorias de IA/interface, Docker/Compose e workflow. |
-| Pessoa 1 — Yasmim | PR #1, `base-c2` para `main` | PR aberto; `main` ainda não contém a base C2. |
-| Pessoa 2 — Kaio | `melhoria-ia` (`8f5213b`), PR #2 | Integrado à linha de interface e depois à `base-c2`. |
-| Pessoa 3 — Gustavo | `melhoria-interface`, `melhoria-interface-2`; PRs #3 e #4 | Integrados à `base-c2`. |
-| Pessoa 4 — Hellen | `testes-c2` (`c7ae4d6`), PR #5 | Quatro commits à frente de `base-c2`; os relatórios não estão nesta base local. GitHub ainda mostrava o PR aberto na última conferência. |
-| Pessoa 5 — José | `documentacao` | Branch baseada em `3e1c276`, com esta frente de documentação proposta para revisão contra `base-c2`. |
+O PR #5 da Hellen foi integrado à `base-c2` pelo merge commit `1702dc6`. O relatório [`docs/TESTES_FUNCIONAIS.md`](TESTES_FUNCIONAIS.md) descreve os testes locais em modo demonstração e aponta capturas de cadastro, login, análise, histórico, feedback, exclusão, isolamento de contas e interface móvel em [`docs/evidencias/`](evidencias/). Essas capturas comprovam os fluxos visuais indicados no relatório, mas não comprovam a infraestrutura PostgreSQL.
 
-A `main` permanece separada da C2 até a integração do PR #1. Antes de abrir outro PR, atualize a branch de trabalho com a base acordada e confira o diff para não duplicar alterações.
+## Estado das branches e PRs em 29/10/2026
+
+- PR #1, `base-c2` para `main`: aberto na consulta registrada; `main` ainda está separada da integração C2.
+- PR #2: integrado à linha de interface.
+- PRs #3 e #4: integrados à `base-c2`.
+- PR #5, `testes-c2` para `base-c2`: integrado no commit `1702dc6`; os relatórios e capturas da Pessoa 4 estão presentes na base.
+- PR #6, documentação: aberto para revisão; a branch de origem é `publicacao-documentacao`.
+
+## Pendências
+
+Ainda dependem de decisão do grupo o prazo de retenção, o contato de privacidade, o procedimento de exclusão completa de conta e o tratamento de backups/logs. Para a C3, ainda será necessário escolher e configurar a hospedagem, testar o fluxo publicado e atualizar a documentação com a URL real. A segunda revisão qualitativa e o consenso também permanecem pendentes.

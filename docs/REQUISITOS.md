@@ -16,10 +16,10 @@ Não há alegação de melhoria comprovada de comportamento da comunidade.
 | Histórico | paginação, autorização por usuário, detalhes | Pytest + Vitest |
 | Feedback | útil/não útil, comentário opcional, uma avaliação por análise | Pytest + Vitest |
 | Minimização | texto/evidências não salvos por padrão, opt-in e exclusão | Pytest |
-| Banco PostgreSQL | driver psycopg, URL configurável, Compose | build, fluxos e persistência após reinício verificados no computador local do responsável; não requer repetição no computador do grupo |
+| Banco PostgreSQL | driver psycopg, URL configurável, Compose | validação local por Docker/PostgreSQL relatada em `VALIDACAO_PUBLICACAO.md`; instalação manual sem `DATABASE_URL` usa SQLite |
 | Testes | Pytest, Vitest, workflow CI | execução local histórica em `VALIDACAO.md`; checks de CI verdes na branch `testes-c2` conforme `VALIDACAO_PUBLICACAO.md` |
 | Eval | 15 casos sintéticos, métricas e rubrica qualitativa | rodada real V2 registrada; conjunto pequeno, revisão independente e consenso pendentes |
-| Publicação | Dockerfile, Compose e guia | grupo escolheu execução local; URL loopback testada; sem URL pública prevista; validação local registrada |
+| Publicação | Dockerfile, Compose e guia | C2: demonstração local, sem URL pública; C3: hospedagem planejada, provedor e URL ainda a definir |
 
 ## Segurança e privacidade
 
@@ -52,4 +52,4 @@ invalida tokens já copiados; para revogação imediata, adicionar sessões pers
 - C2 (30/10/2026): configurar Groq, testar PostgreSQL, executar os casos de eval,
   revisar resultados e documentar evidências do protótipo funcional.
 - C3 (04/12/2026): ampliar e revisar o conjunto, consolidar métricas, configurar
-  hospedagem, verificar o fluxo publicado e atualizar a documentação final.
+  hospedagem, verificar o fluxo publicado e atualizar a documentação com o provedor e a URL escolhidos.
