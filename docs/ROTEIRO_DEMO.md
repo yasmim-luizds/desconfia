@@ -1,12 +1,12 @@
 # Roteiro de demonstração — Desconfia
 
 **Duração sugerida:** 5–7 minutos
-**Ambiente:** local, via Docker Compose, em `http://127.0.0.1:8000`; o endereço só abre no computador da demonstração e não é uma URL pública.
+**Ambiente:** demonstração local da C2 em `http://127.0.0.1:8000`. A instalação manual sem `DATABASE_URL` usa SQLite; o Compose usa PostgreSQL. Não há URL pública para a C2. O planejamento da C3 prevê configurar hospedagem.
 **Dados:** usar somente contas e mensagens fictícias. Não inserir mensagens recebidas por pessoas, nomes, telefones, códigos, links reais ou credenciais.
 
 ## Antes de começar
 
-Antes de começar, confirmar que Docker está ativo e escolher com o grupo entre modo demonstração e integração real com IA. Para demo, usar `AI_MODE=demo`; se a equipe ativar a Groq, configurar a chave somente em variável local protegida, conferir quota/custos e não mostrar credenciais na tela. Não apresentar a execução local como produção pública.
+Antes de começar, decidir qual ambiente será usado na gravação. No modo demo, definir `AI_MODE=demo`. Na instalação manual, conferir também o banco ativo: sem `DATABASE_URL`, será SQLite. Se usar Docker Compose, confirmar que o PostgreSQL está saudável. Não mostrar credenciais nem apresentar a execução local como publicação em nuvem.
 
 A aplicação oferece triagem automatizada de texto, não uma confirmação de fraude nem aconselhamento financeiro. Uma classificação baixa não garante que uma mensagem seja segura. Para casos reais, confirmar por canal independente conhecido.
 
@@ -17,7 +17,7 @@ A aplicação oferece triagem automatizada de texto, não uma confirmação de f
 3. **Analisar uma mensagem sintética.** Exemplo fictício: “Sua conta será bloqueada hoje. Para liberar o acesso, faça um Pix de R$ 1,00 neste aplicativo de demonstração.” Mostrar risco, sinais, explicação e recomendação. Não declarar que o resultado prova a existência de golpe.
 4. **Mostrar privacidade e histórico.** Explicar que o armazenamento da mensagem depende da opção apresentada na interface. Abrir o histórico e destacar que a conta de teste deve ver apenas os próprios registros.
 5. **Enviar feedback e remover o registro de teste.** Enviar feedback sem dados pessoais. Excluir a análise criada e confirmar que ela desapareceu. O procedimento de exclusão de conta inteira ainda precisa ser confirmado pelo grupo; não alegar que esse fluxo foi demonstrado se não houver funcionalidade correspondente.
-6. **Explicar persistência e hospedagem.** O grupo escolheu execução local: abrir `http://127.0.0.1:8000` no computador da apresentação, sem apresentar isso como URL pública. Docker/PostgreSQL e persistência foram testados com dados sintéticos em 27/10/2026 no computador local do responsável. Não é necessário repetir os testes no computador do grupo; apresentar somente as verificações efetivamente realizadas. Os detalhes estão em `VALIDACAO_PUBLICACAO.md`.
+6. **Explicar banco e hospedagem.** A demonstração local é a opção da C2; na instalação manual usada no computador da Yasmin, sem `DATABASE_URL`, o banco é SQLite. O Compose foi usado separadamente para validar PostgreSQL e persistência. Não dizer que a aplicação da gravação está usando PostgreSQL se o ambiente mostrar SQLite. A C3 ainda prevê configurar hospedagem; não há URL pública da C2.
 7. **Encerrar com limitações.** Mencionar que a avaliação V2 usou um conjunto pequeno e sintético, que uma revisão independente e o consenso estão pendentes e que o sistema pode errar ou não responder. Evitar alegações de precisão geral, segurança garantida ou impacto social comprovado.
 
 ## Dados sintéticos adicionais para perguntas
@@ -28,6 +28,6 @@ A aplicação oferece triagem automatizada de texto, não uma confirmação de f
 
 ## Pendências que não devem ser improvisadas
 
-O grupo escolheu execução local, sem URL pública. Retenção de dados, contato de privacidade e escopo da exclusão completa de conta continuam em avaliação. Até haver decisão, descrevê-los como pendentes e não preencher com valores fictícios apresentados como decisões reais.
+A execução local corresponde à demonstração da C2. A hospedagem da C3 continua planejada, mas ainda sem provedor ou URL definidos. Retenção de dados, contato de privacidade e escopo da exclusão completa de conta continuam em avaliação; não apresentar decisões que o grupo ainda não tomou.
 
-Antes da apresentação, o grupo deve conferir se a sequência e as limitações continuam correspondendo ao funcionamento da versão demonstrada.
+No computador da gravação, não é necessário repetir toda a bateria: confirme o modo e o banco ativos, abra `/health` e `/config`, e complete um fluxo curto com conta e mensagem sintéticas (cadastro ou login, análise, histórico e feedback).

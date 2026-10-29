@@ -8,13 +8,13 @@ O resultado é apenas um apoio para a análise. A aplicação pode errar: risco 
 
 ## Branches do grupo
 
-O trabalho ficou separado por frentes. A `main` ainda não recebeu a base C2; o PR #1, de `base-c2` para `main`, continua aberto.
+O trabalho foi organizado por frentes. Na consulta de 29/10/2026, o PR #1, de `base-c2` para `main`, ainda estava aberto.
 
 - **Pessoa 1 — Yasmim (`base-c2`):** preparou a branch de integração da C2. Ela reúne a aplicação usada como base do grupo.
 - **Pessoa 2 — Kaio (`melhoria-ia`):** melhorou a análise da IA, os testes e as métricas. O PR #2 foi integrado à `melhoria-interface`; depois, essa linha de trabalho chegou à `base-c2` pelo PR #3.
 - **Pessoa 3 — Gustavo (`melhoria-interface` e `melhoria-interface-2`):** trabalhou no contraste, fontes, histórico, validação dos formulários, mensagens de erro e tela de resultado. Os PRs #3 e #4 foram integrados à `base-c2`.
-- **Pessoa 4 — Hellen (`testes-c2`):** registrou testes funcionais, evidências e a revisão individual da IA. O PR #5 tem como destino `base-c2`; os arquivos dessa branch ainda não estão nesta cópia local de `base-c2`.
-- **Pessoa 5 — José (`documentacao`):** esta branch, criada a partir de `base-c2`, reúne a documentação de publicação e o roteiro da demonstração.
+- **Pessoa 4 — Hellen (`testes-c2`):** registrou testes funcionais, evidências e a revisão individual da IA. O PR #5 foi integrado à `base-c2` no commit `1702dc6`; os relatórios e capturas estão no repositório.
+- **Pessoa 5 — José (`publicacao-documentacao`):** reúne a documentação de publicação e o roteiro de demonstração; o PR #6 está aberto para revisão.
 
 ## O que dá para fazer
 
@@ -99,6 +99,10 @@ pnpm --dir frontend install --frozen-lockfile
 pnpm --dir frontend build
 ```
 
+Antes de iniciar a API, crie a configuração local a partir do exemplo. No PowerShell, use `Copy-Item backend/.env.example backend/.env`; no macOS ou Linux, use `cp backend/.env.example backend/.env`. Edite `backend/.env` e defina `AI_MODE=demo`, deixando `GROQ_API_KEY` vazio. Sem essa alteração, o padrão é `groq` e a análise pode falhar se não houver chave configurada.
+
+Na instalação manual, se `DATABASE_URL` não estiver definida, o back-end usa SQLite em `backend/desconfia_local.db`.
+
 Para iniciar a API manualmente, execute:
 
 ```bash
@@ -141,7 +145,7 @@ Sem `DATABASE_URL`, o modo local usa SQLite no arquivo `backend/desconfia_local.
 
 5. Abra `http://127.0.0.1:8000`. Para encerrar sem apagar o banco, use `docker compose down`.
 
-O Compose define PostgreSQL 17, uma verificação de disponibilidade do banco e o volume `postgres_data`. Não use `docker compose down -v` se quiser guardar os dados: essa opção remove o volume. O arquivo `.env` não deve ser compartilhado nem enviado ao GitHub.
+O Compose define PostgreSQL 17, uma verificação de disponibilidade do banco e o volume `postgres_data`. Esse caminho serve para validar PostgreSQL na C2; é diferente da instalação manual, que usa SQLite quando `DATABASE_URL` não está definida. Não use `docker compose down -v` se quiser guardar os dados: essa opção remove o volume. O arquivo `.env` não deve ser compartilhado nem enviado ao GitHub.
 
 ## Como o sistema funciona
 
@@ -176,7 +180,7 @@ O comando `--validate-only` confere os 15 casos sintéticos, mas não chama a IA
 
 A rodada real V2 foi feita em 24/10/2026 com 15 mensagens sintéticas e uma repetição por caso. Houve 14 respostas válidas de 15 tentativas; 12 das 14 respostas válidas tiveram a classificação esperada pelo conjunto de teste. Uma resposta foi rejeitada por falha na validação das evidências. Esses números descrevem só essa amostra.
 
-A revisão qualitativa individual e os testes funcionais estão registrados na branch `testes-c2` e no PR #5. A segunda revisão independente e o consenso com a Pessoa 2 ainda precisam ser confirmados. Antes de iniciar outra rodada real, leia `eval/README.md`, pois as chamadas podem consumir quota ou gerar custos. Salve resultados novos em outro arquivo; não sobrescreva os anteriores.
+A revisão qualitativa individual e os testes funcionais estão registrados na branch `testes-c2` e foram integrados à `base-c2` pelo PR #5. A segunda revisão independente e o consenso com a Pessoa 2 ainda precisam ser confirmados. Antes de iniciar outra rodada real, leia `eval/README.md`, pois as chamadas podem consumir quota ou gerar custos. Salve resultados novos em outro arquivo; não sobrescreva os anteriores.
 
 ## Privacidade e cuidados
 
@@ -186,8 +190,6 @@ No modo real, o texto é enviado à Groq para análise. O grupo ainda precisa de
 
 ## Publicação
 
-O grupo escolheu executar a aplicação localmente. A demonstração fica em `http://127.0.0.1:8000`, acessível somente no computador que estiver rodando o Docker Compose; não há URL pública neste plano. As instruções estão em `docs/PUBLICACAO.md`.
+Para a demonstração da C2, a execução escolhida é local, em `http://127.0.0.1:8000`; não há URL pública para esta etapa. O planejamento da C3 ainda prevê configurar hospedagem e testar o fluxo publicado. Provedor e URL da C3 ainda precisam ser definidos. As instruções estão em `docs/PUBLICACAO.md`.
 
-Na validação local de 27/10/2026, a imagem Docker foi construída e os fluxos foram verificados com dados sintéticos: cadastro, login, análise, histórico, feedback, isolamento entre contas e exclusão. O PostgreSQL ficou saudável. Depois de reiniciar o serviço web, a análise e o feedback continuaram no histórico. Também foram reiniciados o container PostgreSQL e o serviço web; a conta e a análise continuaram no volume. Ao todo, passaram 12 verificações de API. Os detalhes estão em `docs/VALIDACAO_PUBLICACAO.md`.
-
-A validação de Docker, PostgreSQL e persistência foi realizada no computador local do responsável, com dados sintéticos. Não é necessário repetir esses testes no computador do grupo. O ambiente de demonstração escolhido é local, sem URL pública.
+O relatório de 27/10/2026 registra uma validação local com Docker/PostgreSQL, 12 verificações da API e conferência de persistência após reinícios. A instalação manual no computador da Yasmin usa SQLite quando não há `DATABASE_URL`; portanto, ela não é a mesma execução do Compose com PostgreSQL. O relatório atualizado distingue os ambientes e informa quais evidências brutas ainda precisam ser anexadas em `docs/VALIDACAO_PUBLICACAO.md`. Antes da gravação, basta fazer uma checagem curta no computador que será usado, sem repetir toda a bateria.
