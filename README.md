@@ -1,105 +1,195 @@
 # Desconfia
 
-Aplicação web do Projeto Integrador IV para apoiar a identificação de indícios de
-golpes em mensagens textuais. Referência principal: relatório de planejamento
-Desconfia. A proposta anterior foi usada apenas como apoio.
+Este é o projeto que eu e meu grupo estamos desenvolvendo para o Projeto Integrador IV. A ideia do Desconfia é ajudar a perceber sinais de risco em mensagens de texto. A pessoa envia uma mensagem e a aplicação mostra uma classificação, os sinais encontrados, uma explicação e uma sugestão do que fazer.
 
-## Comece aqui no Windows
+O resultado é apenas um apoio para a análise. A aplicação pode errar: risco baixo não significa que a mensagem seja segura. Quando houver dúvida, o certo é confirmar por um canal oficial conhecido.
 
-1. Abra `iniciar_demo.bat` nesta pasta.
-2. Aguarde a instalação e a mensagem de que o servidor está disponível.
-3. Abra http://127.0.0.1:8000 no navegador.
-4. Crie uma conta e use a mensagem de exemplo.
+> Para testes e apresentações, use só mensagens inventadas. Não cole conversas reais, senhas, códigos de autenticação, dados bancários, telefones ou outras informações pessoais.
 
-O modo demonstração funciona sem conta na Groq, usando regras locais e um aviso
-visível. Ele permite testar as telas; não representa a qualidade de uma IA.
-O terminal precisa continuar aberto. Ctrl+C encerra o servidor. A primeira execução
-precisa de internet para instalar dependências. O script usa Python/Node instalados
-ou, neste computador, os runtimes disponíveis no Codex.
+## Branches do grupo
 
-Em outro computador: Python 3.12+, Node.js 22+ e pnpm 11.25.0 (`npm install -g pnpm@11.25.0`).
+O trabalho foi organizado por frentes. Na consulta de 29/10/2026, o PR #1, de `base-c2` para `main`, ainda estava aberto.
 
-## Ativar a IA real
+- **Pessoa 1 — Yasmim (`base-c2`):** preparou a branch de integração da C2. Ela reúne a aplicação usada como base do grupo.
+- **Pessoa 2 — Kaio (`melhoria-ia`):** melhorou a análise da IA, os testes e as métricas. O PR #2 foi integrado à `melhoria-interface`; depois, essa linha de trabalho chegou à `base-c2` pelo PR #3.
+- **Pessoa 3 — Gustavo (`melhoria-interface` e `melhoria-interface-2`):** trabalhou no contraste, fontes, histórico, validação dos formulários, mensagens de erro e tela de resultado. Os PRs #3 e #4 foram integrados à `base-c2`.
+- **Pessoa 4 — Hellen (`testes-c2`):** registrou testes funcionais, evidências e a revisão individual da IA. O PR #5 foi integrado à `base-c2` no commit `1702dc6`; os relatórios e capturas estão no repositório.
+- **Pessoa 5 — José (`publicacao-documentacao`):** reúne a documentação de publicação e o roteiro de demonstração; o PR #6 está aberto para revisão.
 
-1. Crie sua conta na Groq e gere uma chave: https://console.groq.com/keys.
-2. Abra `backend/.env`, já preparado neste computador. Em outro computador, copie `backend/.env.example` para `backend/.env`.
-3. Preencha `GROQ_API_KEY` e mantenha `AI_MODE=groq`. Um segredo de sessão já foi gerado localmente; em outra instalação, gere `DESCONFIA_SECRET_KEY`.
-4. Execute `iniciar_local.bat`. Não use `iniciar_demo.bat` para testar a Groq.
+## O que dá para fazer
 
-Comando para gerar o segredo (rode localmente e copie o resultado para o arquivo):
+- Criar uma conta, entrar e sair.
+- Analisar uma mensagem de texto de até 2.000 caracteres.
+- Ver o resultado como risco baixo, médio ou alto, junto com sinais, explicação e recomendação.
+- Consultar o histórico da própria conta, enviar feedback e excluir uma análise.
+- Usar o modo demonstração sem chave de IA ou configurar a análise real pela API Groq.
 
-```powershell
-.\.venv\Scripts\python.exe -c "import secrets; print(secrets.token_urlsafe(48))"
+A ferramenta só analisa texto. Não lê imagens, áudios, QR Codes nem páginas da internet. A opção disponível para exclusão remove uma análise; a exclusão completa da conta ainda não está implementada como um fluxo documentado.
+
+## O que instalar
+
+Para executar a aplicação no computador, instale Python 3.12 ou superior, Node.js 22 e pnpm 11.25.0. Docker é necessário para testar PostgreSQL com Compose ou construir a imagem.
+
+| Programa | Para que serve | Download oficial |
+|---|---|---|
+| Python 3.12+ | API e testes do back-end | [python.org/downloads](https://www.python.org/downloads/) |
+| Node.js 22 | Ferramentas do front-end | [nodejs.org/download](https://nodejs.org/en/download) — escolha a linha 22 |
+| pnpm 11.25.0 | Dependências e build do front-end | [Instalação do pnpm](https://pnpm.io/installation) |
+| Git | Clonar e atualizar o projeto | [git-scm.com/downloads](https://git-scm.com/downloads) |
+| Docker | PostgreSQL local e containers | [Docker Desktop](https://docs.docker.com/desktop/) |
+
+Depois de instalar Node.js, instale a versão de pnpm usada pelo projeto:
+
+```bash
+npm install -g pnpm@11.25.0
 ```
 
-A chave fica somente no back-end. Não a coloque em variáveis `VITE_`, arquivos
-versionados, imagens ou mensagens. O modelo padrão é `openai/gpt-oss-20b`, com
-resposta estruturada e validação adicional no servidor. Pode ser trocado por outro
-modelo Groq compatível com JSON Schema estrito em `GROQ_MODEL`.
-Fonte: https://console.groq.com/docs/structured-outputs.
+Confira se os comandos estão disponíveis:
 
-## Estrutura
+```bash
+python --version
+node --version
+pnpm --version
+```
 
-| Pasta | Função |
+## Como iniciar em modo demonstração
+
+### Windows
+
+Na pasta do projeto, abra `iniciar_demo.bat`. Na primeira execução, o script instala as dependências, compila o front-end e inicia o servidor. Quando aparecer a mensagem de que está pronto, abra `http://127.0.0.1:8000`. O modo demo usa regras locais, então não precisa de chave Groq. Deixe o terminal aberto enquanto estiver usando; `Ctrl+C` encerra a aplicação.
+
+### macOS ou Linux
+
+No terminal, dentro da pasta do projeto, rode:
+
+```bash
+chmod +x iniciar_local.sh
+AI_MODE=demo ./iniciar_local.sh
+```
+
+Depois, acesse `http://127.0.0.1:8000`. O script prepara o ambiente Python, instala as dependências, compila a interface e inicia a API. Para sair, use `Ctrl+C`.
+
+O modo demo serve para apresentar as telas e o fluxo. Ele não usa um modelo de IA.
+
+### Instalação manual
+
+Se preferir preparar tudo passo a passo, crie um ambiente virtual na pasta do projeto:
+
+```bash
+python -m venv .venv
+```
+
+Ative-o no PowerShell:
+
+```powershell
+.\.venv\Scripts\Activate.ps1
+```
+
+Ou no macOS/Linux:
+
+```bash
+source .venv/bin/activate
+```
+
+Instale as dependências e gere o front-end:
+
+```bash
+python -m pip install -r backend/requirements.txt
+pnpm --dir frontend install --frozen-lockfile
+pnpm --dir frontend build
+```
+
+Antes de iniciar a API, crie a configuração local a partir do exemplo. No PowerShell, use `Copy-Item backend/.env.example backend/.env`; no macOS ou Linux, use `cp backend/.env.example backend/.env`. Edite `backend/.env` e defina `AI_MODE=demo`, deixando `GROQ_API_KEY` vazio. Sem essa alteração, o padrão é `groq` e a análise pode falhar se não houver chave configurada.
+
+Na instalação manual, se `DATABASE_URL` não estiver definida, o back-end usa SQLite em `backend/desconfia_local.db`.
+
+Para iniciar a API manualmente, execute:
+
+```bash
+cd backend
+python -m uvicorn app.main:app --host 127.0.0.1 --port 8000
+```
+
+A documentação interativa da API fica em `http://127.0.0.1:8000/docs`.
+
+## Como ativar a análise com IA
+
+O modo real envia a mensagem ao serviço da Groq pelo back-end. Para usá-lo, é preciso ter uma chave, acesso à internet e quota disponível. Crie a chave no Groq Console e siga estes passos:
+
+1. Copie `backend/.env.example` para `backend/.env`.
+2. Preencha `GROQ_API_KEY` e mantenha `AI_MODE=groq`.
+3. Gere um segredo local para `DESCONFIA_SECRET_KEY`:
+
+   ```bash
+   python -c "import secrets; print(secrets.token_urlsafe(48))"
+   ```
+
+4. Inicie com `iniciar_local.bat` no Windows ou `./iniciar_local.sh` no macOS/Linux.
+
+O modelo configurado como padrão é `openai/gpt-oss-20b`. Antes de trocar o modelo ou executar uma avaliação real, confira a documentação da Groq, os limites da conta e o número de chamadas previsto.
+
+A chave deve ficar somente no back-end. Não a coloque em variável `VITE_`, código enviado ao navegador, captura de tela ou commit. Não envie o arquivo `.env` ao GitHub.
+
+## Como testar PostgreSQL com Docker
+
+Sem `DATABASE_URL`, o modo local usa SQLite no arquivo `backend/desconfia_local.db`. Para testar o PostgreSQL previsto para a publicação:
+
+1. Instale e abra Docker Desktop ou Docker Engine.
+2. Copie `.env.example` para `.env` na raiz do projeto.
+3. Preencha `POSTGRES_PASSWORD` e `DESCONFIA_SECRET_KEY` com valores fortes, só para esse ambiente. Se não tiver uma chave Groq, altere `AI_MODE` para `demo`.
+4. Inicie os serviços:
+
+   ```bash
+   docker compose up --build
+   ```
+
+5. Abra `http://127.0.0.1:8000`. Para encerrar sem apagar o banco, use `docker compose down`.
+
+O Compose define PostgreSQL 17, uma verificação de disponibilidade do banco e o volume `postgres_data`. Esse caminho serve para validar PostgreSQL na C2; é diferente da instalação manual, que usa SQLite quando `DATABASE_URL` não está definida. Não use `docker compose down -v` se quiser guardar os dados: essa opção remove o volume. O arquivo `.env` não deve ser compartilhado nem enviado ao GitHub.
+
+## Como o sistema funciona
+
+A interface foi feita com React e Vite. Ela envia as solicitações ao back-end em FastAPI. O back-end cuida do cadastro, da autenticação, das análises e do banco de dados, usando SQLAlchemy. Quando a IA real está ativada, o servidor conversa com a Groq; a chave não vai para o navegador. No modo demo, regras locais substituem essa chamada.
+
+| Pasta ou arquivo | O que contém |
 |---|---|
-| `frontend/` | React + JavaScript + Vite, interface responsiva |
-| `backend/app/` | FastAPI, autenticação, análise, histórico e feedback |
-| `backend/tests/` | Testes automatizados com Pytest e serviço de IA simulado |
-| `eval/` | Casos sintéticos e avaliação real da Groq |
-| `docs/` | Arquitetura, requisitos, privacidade e publicação |
-| `mobile/` | Protótipo anterior, preservado; não é a interface web desta entrega |
+| `frontend/` | Interface, estilos e testes Vitest |
+| `backend/app/` | API, autenticação, integração com IA e acesso ao banco |
+| `backend/tests/` | Testes Pytest do back-end |
+| `eval/` | Mensagens sintéticas, script de avaliação e resultados registrados |
+| `docs/` | Requisitos, arquitetura, testes, publicação e roteiro da apresentação |
+| `compose.yaml` | Configuração local da aplicação e do PostgreSQL |
+| `Dockerfile` | Instruções para construir a imagem da aplicação |
+| `.github/workflows/tests.yml` | Testes automatizados executados pelo GitHub Actions |
 
-O fluxo é navegador → FastAPI → Groq → validação → banco → resultado no navegador.
-Há cadastro, login, logout, análise, sinais, explicação, recomendação, histórico
-paginado, feedback e exclusão de análise. O token fica em memória; atualizar a
-página exige novo login. Ele expira em 8 horas. Logout remove a sessão do navegador;
-não revoga um token que tenha sido copiado antes de sair.
+## Testes e avaliação
 
-## Banco
+Para rodar os testes automatizados, com Python, Node.js e pnpm instalados:
 
-Sem `DATABASE_URL`, usa SQLite local para facilitar a demonstração. A implantação
-prevista usa PostgreSQL via psycopg e SQLAlchemy. O modo `APP_ENV=production` exige
-PostgreSQL, segredo de pelo menos 32 caracteres e `AI_MODE=groq`.
-
-Para PostgreSQL local com Docker Desktop: copie `.env.example` da raiz para `.env`,
-preencha senhas aleatórias alfanuméricas/URL-safe e execute `docker compose up --build`.
-Use `AI_MODE=demo` nesse arquivo se ainda não tiver Groq. O volume mantém o banco.
-Não execute `docker compose down -v` se quiser preservar os dados.
-
-## Desenvolvimento e testes
-
-Back-end (a partir da pasta `backend`):
-
-```powershell
-..\.venv\Scripts\python.exe -m pytest -q
-..\.venv\Scripts\python.exe -m uvicorn app.main:app --reload
-```
-
-Front-end (outro terminal, na pasta `frontend`):
-
-```text
-pnpm install --frozen-lockfile
-pnpm dev
+```bash
+cd backend
+python -m pytest -q
+cd ../frontend
 pnpm test
 pnpm build
+cd ..
+python eval/run_eval.py --validate-only
 ```
 
-O Vite encaminha as chamadas ao back-end em 8000. A versão compilada é servida
-pelo próprio FastAPI. Reinicie o back-end se compilou a interface pela primeira vez
-depois de iniciar o servidor. API documentada em http://127.0.0.1:8000/docs.
+O comando `--validate-only` confere os 15 casos sintéticos, mas não chama a IA e não calcula métricas. O workflow do GitHub executa Pytest, essa validação e os testes e build do front-end.
 
-Na raiz: `.\.venv\Scripts\python.exe eval/run_eval.py --validate-only` valida os casos
-sem chamadas externas. Leia `eval/README.md` antes de rodar a avaliação real.
+A rodada real V2 foi feita em 24/10/2026 com 15 mensagens sintéticas e uma repetição por caso. Houve 14 respostas válidas de 15 tentativas; 12 das 14 respostas válidas tiveram a classificação esperada pelo conjunto de teste. Uma resposta foi rejeitada por falha na validação das evidências. Esses números descrevem só essa amostra.
 
-## Limites da entrega
+A revisão qualitativa individual e os testes funcionais estão registrados na branch `testes-c2` e foram integrados à `base-c2` pelo PR #5. A segunda revisão independente e o consenso com a Pessoa 2 ainda precisam ser confirmados. Antes de iniciar outra rodada real, leia `eval/README.md`, pois as chamadas podem consumir quota ou gerar custos. Salve resultados novos em outro arquivo; não sobrescreva os anteriores.
 
-- Credencial Groq e conta de hospedagem ainda não fornecidas: chamadas reais,
-  métricas de qualidade da IA e publicação dependem dessa configuração.
-- Docker/PostgreSQL precisam ser validados em um ambiente que os tenha disponíveis.
-- Os testes do serviço externo usam respostas simuladas; não demonstram resistência
-  real a prompt injection ou acurácia do modelo.
-- A aplicação não analisa imagens, áudio, QR Codes ou conteúdo de páginas externas.
-- A criação inicial de tabelas é automática; futuras mudanças de esquema exigem
-  migrações planejadas antes de atualizar um banco em produção.
+## Privacidade e cuidados
 
-Veja `docs/PUBLICACAO.md` e `docs/REQUISITOS.md` para os próximos passos.
+Por padrão, a mensagem original não é guardada. A pessoa pode optar por salvá-la no histórico. Mesmo quando o texto original não é salvo, explicações, resultados ou comentários podem acabar contendo dados pessoais. Por isso, nas demonstrações e testes, use mensagens inventadas.
+
+No modo real, o texto é enviado à Groq para análise. O grupo ainda precisa definir o prazo de retenção, o contato para questões de privacidade e o procedimento para exclusão completa de conta. A exclusão de uma análise não significa que uma conta inteira foi apagada.
+
+## Publicação
+
+Para a demonstração da C2, a execução escolhida é local, em `http://127.0.0.1:8000`; não há URL pública para esta etapa. O planejamento da C3 ainda prevê configurar hospedagem e testar o fluxo publicado. Provedor e URL da C3 ainda precisam ser definidos. As instruções estão em `docs/PUBLICACAO.md`.
+
+O relatório de 27/10/2026 registra uma validação local com Docker/PostgreSQL, 12 verificações da API e conferência de persistência após reinícios. A instalação manual no computador da Yasmin usa SQLite quando não há `DATABASE_URL`; portanto, ela não é a mesma execução do Compose com PostgreSQL. O relatório atualizado distingue os ambientes e informa quais evidências brutas ainda precisam ser anexadas em `docs/VALIDACAO_PUBLICACAO.md`. Antes da gravação, basta fazer uma checagem curta no computador que será usado, sem repetir toda a bateria.
