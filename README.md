@@ -1,288 +1,195 @@
 # Desconfia
 
-O **Desconfia** é uma aplicação web desenvolvida para a disciplina **Projeto Integrador IV**, com foco na aplicação de **Inteligência Artificial** e **Testes de Software**.
+Este é o projeto que eu e meu grupo estamos desenvolvendo para o Projeto Integrador IV. A ideia do Desconfia é ajudar a perceber sinais de risco em mensagens de texto. A pessoa envia uma mensagem e a aplicação mostra uma classificação, os sinais encontrados, uma explicação e uma sugestão do que fazer.
 
-O projeto tem como objetivo auxiliar usuários na identificação de **indícios de golpes digitais em mensagens de texto**, como conteúdos recebidos por WhatsApp, SMS, e-mail ou redes sociais.
+O resultado é apenas um apoio para a análise. A aplicação pode errar: risco baixo não significa que a mensagem seja segura. Quando houver dúvida, o certo é confirmar por um canal oficial conhecido.
 
-O sistema utiliza um modelo de linguagem por meio da **Groq API** para analisar o conteúdo enviado pelo usuário e apresentar uma avaliação de risco de forma simples e explicativa.
+> Para testes e apresentações, use só mensagens inventadas. Não cole conversas reais, senhas, códigos de autenticação, dados bancários, telefones ou outras informações pessoais.
 
-> O Desconfia funciona como uma ferramenta de apoio e prevenção. A análise realizada pelo sistema não representa uma confirmação definitiva de que determinada mensagem seja ou não fraudulenta.
+## Branches do grupo
 
----
+O trabalho foi organizado por frentes. Na consulta de 29/10/2026, o PR #1, de `base-c2` para `main`, ainda estava aberto.
 
-## Funcionalidades
+- **Pessoa 1 — Yasmim (`base-c2`):** preparou a branch de integração da C2. Ela reúne a aplicação usada como base do grupo.
+- **Pessoa 2 — Kaio (`melhoria-ia`):** melhorou a análise da IA, os testes e as métricas. O PR #2 foi integrado à `melhoria-interface`; depois, essa linha de trabalho chegou à `base-c2` pelo PR #3.
+- **Pessoa 3 — Gustavo (`melhoria-interface` e `melhoria-interface-2`):** trabalhou no contraste, fontes, histórico, validação dos formulários, mensagens de erro e tela de resultado. Os PRs #3 e #4 foram integrados à `base-c2`.
+- **Pessoa 4 — Hellen (`testes-c2`):** registrou testes funcionais, evidências e a revisão individual da IA. O PR #5 foi integrado à `base-c2` no commit `1702dc6`; os relatórios e capturas estão no repositório.
+- **Pessoa 5 — José (`publicacao-documentacao`):** reúne a documentação de publicação e o roteiro de demonstração; o PR #6 está aberto para revisão.
 
-O MVP do Desconfia prevê as seguintes funcionalidades:
+## O que dá para fazer
 
-- Cadastro de usuários;
-- Login e autenticação;
-- Envio de mensagens textuais para análise;
-- Análise utilizando Inteligência Artificial;
-- Classificação do risco como **baixo, médio ou alto**;
-- Identificação de possíveis sinais de engenharia social;
-- Explicação dos fatores considerados na análise;
-- Recomendações de segurança;
-- Histórico de análises realizadas;
-- Feedback do usuário sobre as análises;
-- Testes automatizados;
-- Avaliação específica do comportamento da IA;
-- Deploy da aplicação em ambiente de nuvem.
+- Criar uma conta, entrar e sair.
+- Analisar uma mensagem de texto de até 2.000 caracteres.
+- Ver o resultado como risco baixo, médio ou alto, junto com sinais, explicação e recomendação.
+- Consultar o histórico da própria conta, enviar feedback e excluir uma análise.
+- Usar o modo demonstração sem chave de IA ou configurar a análise real pela API Groq.
 
----
+A ferramenta só analisa texto. Não lê imagens, áudios, QR Codes nem páginas da internet. A opção disponível para exclusão remove uma análise; a exclusão completa da conta ainda não está implementada como um fluxo documentado.
 
-## Como funciona
+## O que instalar
 
-O usuário poderá inserir no sistema uma mensagem que considere suspeita.
+Para executar a aplicação no computador, instale Python 3.12 ou superior, Node.js 22 e pnpm 11.25.0. Docker é necessário para testar PostgreSQL com Compose ou construir a imagem.
 
-Exemplos de situações que poderão ser analisadas:
+| Programa | Para que serve | Download oficial |
+|---|---|---|
+| Python 3.12+ | API e testes do back-end | [python.org/downloads](https://www.python.org/downloads/) |
+| Node.js 22 | Ferramentas do front-end | [nodejs.org/download](https://nodejs.org/en/download) — escolha a linha 22 |
+| pnpm 11.25.0 | Dependências e build do front-end | [Instalação do pnpm](https://pnpm.io/installation) |
+| Git | Clonar e atualizar o projeto | [git-scm.com/downloads](https://git-scm.com/downloads) |
+| Docker | PostgreSQL local e containers | [Docker Desktop](https://docs.docker.com/desktop/) |
 
-- pedidos inesperados de Pix ou transferências;
-- mensagens com senso de urgência;
-- supostas notificações de bloqueio de contas;
-- pedidos de senhas ou códigos de autenticação;
-- promessas inesperadas de prêmios ou benefícios;
-- tentativa de se passar por familiares, empresas ou instituições.
+Depois de instalar Node.js, instale a versão de pnpm usada pelo projeto:
 
-Após o envio, o backend encaminhará o conteúdo para o modelo de Inteligência Artificial.
-
-O resultado deverá apresentar:
-
-- nível de risco;
-- sinais identificados;
-- explicação da análise;
-- recomendações preventivas.
-
-Exemplo:
-
-```text
-Nível de risco: ALTO
-
-Sinais identificados:
-- senso de urgência;
-- solicitação financeira;
-- possível personificação.
-
-Explicação:
-A mensagem combina uma mudança inesperada de contato
-com uma solicitação de pagamento urgente.
-
-Recomendação:
-Confirme a solicitação com a pessoa por outro canal
-antes de realizar qualquer pagamento.
-````
-
----
-
-## Tecnologias
-
-### Frontend
-
-* React
-* JavaScript
-* Vite
-
-### Backend
-
-* Python
-* FastAPI
-
-### Banco de dados
-
-* PostgreSQL
-* SQLAlchemy
-
-### Inteligência Artificial
-
-* Groq API
-
-### Testes
-
-* Pytest
-* Vitest
-
-### Versionamento
-
-* Git
-* GitHub
-
-### Deploy
-
-Será utilizado um serviço de nuvem com camada gratuita, definido de acordo com a disponibilidade e os limites existentes durante a etapa de publicação do MVP.
-
----
-
-## Arquitetura inicial
-
-```text
-                    Usuário
-                       │
-                       ▼
-            React + JavaScript + Vite
-                   Frontend
-                       │
-                       │ HTTP/HTTPS
-                       ▼
-                FastAPI + Python
-                    Backend
-                  /           \
-                 /             \
-                ▼               ▼
-        PostgreSQL          Groq API
-        + SQLAlchemy           IA
+```bash
+npm install -g pnpm@11.25.0
 ```
 
-O **frontend** será responsável pela interface e interação com o usuário.
+Confira se os comandos estão disponíveis:
 
-O **backend** será responsável pela autenticação, regras da aplicação, acesso ao banco de dados e comunicação com a Inteligência Artificial.
-
-O **PostgreSQL** armazenará informações como usuários, histórico de análises e feedbacks.
-
-A **Groq API** será utilizada para realizar a interpretação contextual das mensagens.
-
----
-
-## Estrutura do projeto
-
-```text
-desconfia/
-│
-├── frontend/
-│
-├── backend/
-│
-├── ia-tests/
-│   ├── dataset/
-│   └── results/
-│
-├── docs/
-│   ├── requirements/
-│   └── system/
-│
-├── .gitignore
-└── README.md
+```bash
+python --version
+node --version
+pnpm --version
 ```
 
-### `frontend/`
+## Como iniciar em modo demonstração
 
-Contém a aplicação web desenvolvida utilizando React, JavaScript e Vite.
+### Windows
 
-### `backend/`
+Na pasta do projeto, abra `iniciar_demo.bat`. Na primeira execução, o script instala as dependências, compila o front-end e inicia o servidor. Quando aparecer a mensagem de que está pronto, abra `http://127.0.0.1:8000`. O modo demo usa regras locais, então não precisa de chave Groq. Deixe o terminal aberto enquanto estiver usando; `Ctrl+C` encerra a aplicação.
 
-Contém a API desenvolvida em FastAPI, incluindo autenticação, regras da aplicação, integração com PostgreSQL e comunicação com a Groq API.
+### macOS ou Linux
 
-### `ia-tests/`
+No terminal, dentro da pasta do projeto, rode:
 
-Contém os arquivos relacionados à avaliação do comportamento da Inteligência Artificial.
-
-* `dataset/`: casos utilizados para avaliar o modelo;
-* `results/`: resultados das execuções e métricas obtidas.
-
-### `docs/`
-
-Contém a documentação técnica do projeto.
-
-* `requirements/`: requisitos funcionais e não funcionais;
-* `system/`: arquitetura, decisões técnicas e documentação do sistema.
-
----
-
-## Testes e avaliação da IA
-
-O projeto utilizará dois tipos principais de avaliação.
-
-### Testes de software
-
-Serão utilizados testes automatizados para verificar partes críticas da aplicação, como:
-
-* cadastro;
-* autenticação;
-* validação de dados;
-* endpoints da API;
-* integração com o banco;
-* tratamento de erros;
-* interface do usuário.
-
-### Avaliação da Inteligência Artificial
-
-Será criado um conjunto de mensagens de teste contendo diferentes situações, como:
-
-* mensagens legítimas;
-* mensagens potencialmente fraudulentas;
-* casos ambíguos;
-* diferentes formas de escrita;
-* tentativas de manipulação das instruções da IA.
-
-Entre os aspectos avaliados estarão:
-
-* classificações corretas;
-* falsos positivos;
-* falsos negativos;
-* consistência;
-* robustez;
-* qualidade das explicações;
-* respostas fora do formato esperado.
-
----
-
-## Segurança e privacidade
-
-O Desconfia será desenvolvido considerando princípios básicos de segurança e privacidade.
-
-Entre os cuidados previstos estão:
-
-* senhas armazenadas utilizando hash;
-* chave da Groq API mantida apenas no backend;
-* validação das entradas enviadas pelo usuário;
-* controle de acesso ao histórico;
-* minimização do armazenamento de dados pessoais;
-* tratamento de mensagens potencialmente maliciosas;
-* proteção contra tentativas de prompt injection;
-* comunicação clara sobre as limitações da Inteligência Artificial.
-
----
-
-## Desenvolvimento com Inteligência Artificial
-
-Ferramentas de Inteligência Artificial poderão ser utilizadas como apoio durante o desenvolvimento do projeto.
-
-Conforme orientação da disciplina, quando uma ferramenta de IA for utilizada em uma atividade de engenharia de software, o **prompt relevante utilizado deverá ser registrado no respectivo commit do Git**.
-
-Exemplo:
-
-```text
-feat: adiciona validação do formulário de análise
-
-IA utilizada: ChatGPT
-
-Prompt:
-"Implemente uma validação no formulário React para impedir
-o envio de mensagens vazias."
+```bash
+chmod +x iniciar_local.sh
+AI_MODE=demo ./iniciar_local.sh
 ```
 
-Dessa forma, o histórico do Git também permitirá acompanhar a utilização de IA durante o desenvolvimento.
+Depois, acesse `http://127.0.0.1:8000`. O script prepara o ambiente Python, instala as dependências, compila a interface e inicia a API. Para sair, use `Ctrl+C`.
 
----
+O modo demo serve para apresentar as telas e o fluxo. Ele não usa um modelo de IA.
 
-## Escopo do MVP
+### Instalação manual
 
-O MVP será concentrado na **análise de mensagens textuais**.
+Se preferir preparar tudo passo a passo, crie um ambiente virtual na pasta do projeto:
 
-Não fazem parte do escopo inicial:
+```bash
+python -m venv .venv
+```
 
-* análise de imagens;
-* OCR;
-* QR Codes;
-* mensagens de áudio;
-* vídeos;
-* documentos;
-* análise automática de sites;
-* RAG.
+Ative-o no PowerShell:
 
-Esses recursos poderão ser considerados como possíveis evoluções futuras.
+```powershell
+.\.venv\Scripts\Activate.ps1
+```
 
----
+Ou no macOS/Linux:
 
-## Equipe
+```bash
+source .venv/bin/activate
+```
 
-Projeto desenvolvido por alunos da disciplina **Projeto Integrador IV**.
+Instale as dependências e gere o front-end:
 
+```bash
+python -m pip install -r backend/requirements.txt
+pnpm --dir frontend install --frozen-lockfile
+pnpm --dir frontend build
+```
+
+Antes de iniciar a API, crie a configuração local a partir do exemplo. No PowerShell, use `Copy-Item backend/.env.example backend/.env`; no macOS ou Linux, use `cp backend/.env.example backend/.env`. Edite `backend/.env` e defina `AI_MODE=demo`, deixando `GROQ_API_KEY` vazio. Sem essa alteração, o padrão é `groq` e a análise pode falhar se não houver chave configurada.
+
+Na instalação manual, se `DATABASE_URL` não estiver definida, o back-end usa SQLite em `backend/desconfia_local.db`.
+
+Para iniciar a API manualmente, execute:
+
+```bash
+cd backend
+python -m uvicorn app.main:app --host 127.0.0.1 --port 8000
+```
+
+A documentação interativa da API fica em `http://127.0.0.1:8000/docs`.
+
+## Como ativar a análise com IA
+
+O modo real envia a mensagem ao serviço da Groq pelo back-end. Para usá-lo, é preciso ter uma chave, acesso à internet e quota disponível. Crie a chave no Groq Console e siga estes passos:
+
+1. Copie `backend/.env.example` para `backend/.env`.
+2. Preencha `GROQ_API_KEY` e mantenha `AI_MODE=groq`.
+3. Gere um segredo local para `DESCONFIA_SECRET_KEY`:
+
+   ```bash
+   python -c "import secrets; print(secrets.token_urlsafe(48))"
+   ```
+
+4. Inicie com `iniciar_local.bat` no Windows ou `./iniciar_local.sh` no macOS/Linux.
+
+O modelo configurado como padrão é `openai/gpt-oss-20b`. Antes de trocar o modelo ou executar uma avaliação real, confira a documentação da Groq, os limites da conta e o número de chamadas previsto.
+
+A chave deve ficar somente no back-end. Não a coloque em variável `VITE_`, código enviado ao navegador, captura de tela ou commit. Não envie o arquivo `.env` ao GitHub.
+
+## Como testar PostgreSQL com Docker
+
+Sem `DATABASE_URL`, o modo local usa SQLite no arquivo `backend/desconfia_local.db`. Para testar o PostgreSQL previsto para a publicação:
+
+1. Instale e abra Docker Desktop ou Docker Engine.
+2. Copie `.env.example` para `.env` na raiz do projeto.
+3. Preencha `POSTGRES_PASSWORD` e `DESCONFIA_SECRET_KEY` com valores fortes, só para esse ambiente. Se não tiver uma chave Groq, altere `AI_MODE` para `demo`.
+4. Inicie os serviços:
+
+   ```bash
+   docker compose up --build
+   ```
+
+5. Abra `http://127.0.0.1:8000`. Para encerrar sem apagar o banco, use `docker compose down`.
+
+O Compose define PostgreSQL 17, uma verificação de disponibilidade do banco e o volume `postgres_data`. Esse caminho serve para validar PostgreSQL na C2; é diferente da instalação manual, que usa SQLite quando `DATABASE_URL` não está definida. Não use `docker compose down -v` se quiser guardar os dados: essa opção remove o volume. O arquivo `.env` não deve ser compartilhado nem enviado ao GitHub.
+
+## Como o sistema funciona
+
+A interface foi feita com React e Vite. Ela envia as solicitações ao back-end em FastAPI. O back-end cuida do cadastro, da autenticação, das análises e do banco de dados, usando SQLAlchemy. Quando a IA real está ativada, o servidor conversa com a Groq; a chave não vai para o navegador. No modo demo, regras locais substituem essa chamada.
+
+| Pasta ou arquivo | O que contém |
+|---|---|
+| `frontend/` | Interface, estilos e testes Vitest |
+| `backend/app/` | API, autenticação, integração com IA e acesso ao banco |
+| `backend/tests/` | Testes Pytest do back-end |
+| `eval/` | Mensagens sintéticas, script de avaliação e resultados registrados |
+| `docs/` | Requisitos, arquitetura, testes, publicação e roteiro da apresentação |
+| `compose.yaml` | Configuração local da aplicação e do PostgreSQL |
+| `Dockerfile` | Instruções para construir a imagem da aplicação |
+| `.github/workflows/tests.yml` | Testes automatizados executados pelo GitHub Actions |
+
+## Testes e avaliação
+
+Para rodar os testes automatizados, com Python, Node.js e pnpm instalados:
+
+```bash
+cd backend
+python -m pytest -q
+cd ../frontend
+pnpm test
+pnpm build
+cd ..
+python eval/run_eval.py --validate-only
+```
+
+O comando `--validate-only` confere os 15 casos sintéticos, mas não chama a IA e não calcula métricas. O workflow do GitHub executa Pytest, essa validação e os testes e build do front-end.
+
+A rodada real V2 foi feita em 24/10/2026 com 15 mensagens sintéticas e uma repetição por caso. Houve 14 respostas válidas de 15 tentativas; 12 das 14 respostas válidas tiveram a classificação esperada pelo conjunto de teste. Uma resposta foi rejeitada por falha na validação das evidências. Esses números descrevem só essa amostra.
+
+A revisão qualitativa individual e os testes funcionais estão registrados na branch `testes-c2` e foram integrados à `base-c2` pelo PR #5. A segunda revisão independente e o consenso com a Pessoa 2 ainda precisam ser confirmados. Antes de iniciar outra rodada real, leia `eval/README.md`, pois as chamadas podem consumir quota ou gerar custos. Salve resultados novos em outro arquivo; não sobrescreva os anteriores.
+
+## Privacidade e cuidados
+
+Por padrão, a mensagem original não é guardada. A pessoa pode optar por salvá-la no histórico. Mesmo quando o texto original não é salvo, explicações, resultados ou comentários podem acabar contendo dados pessoais. Por isso, nas demonstrações e testes, use mensagens inventadas.
+
+No modo real, o texto é enviado à Groq para análise. O grupo ainda precisa definir o prazo de retenção, o contato para questões de privacidade e o procedimento para exclusão completa de conta. A exclusão de uma análise não significa que uma conta inteira foi apagada.
+
+## Publicação
+
+Para a demonstração da C2, a execução escolhida é local, em `http://127.0.0.1:8000`; não há URL pública para esta etapa. O planejamento da C3 ainda prevê configurar hospedagem e testar o fluxo publicado. Provedor e URL da C3 ainda precisam ser definidos. As instruções estão em `docs/PUBLICACAO.md`.
+
+O relatório de 27/10/2026 registra uma validação local com Docker/PostgreSQL, 12 verificações da API e conferência de persistência após reinícios. A instalação manual no computador da Yasmin usa SQLite quando não há `DATABASE_URL`; portanto, ela não é a mesma execução do Compose com PostgreSQL. O relatório atualizado distingue os ambientes e informa quais evidências brutas ainda precisam ser anexadas em `docs/VALIDACAO_PUBLICACAO.md`. Antes da gravação, basta fazer uma checagem curta no computador que será usado, sem repetir toda a bateria.

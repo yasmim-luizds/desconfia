@@ -1,0 +1,29 @@
+services:
+  database:
+    image: postgres:17
+    environment:
+      POSTGRES_DB: desconfia
+      POSTGRES_USER: desconfia
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Defina POSTGRES_PASSWORD no arquivo .env da raiz}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U desconfia -d desconfia"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+  web:
+    build: .
+    ports: ["127.0.0.1:8000:8000"]
+    environment:
+      DATABASE_URL: postgresql+psycopg://desconfia:${POSTGRES_PASSWORD}@database:5432/desconfia
+      DESCONFIA_SECRET_KEY: ${DESCONFIA_SECRET_KEY:?Defina DESCONFIA_SECRET_KEY}
+      AI_MODE: ${AI_MODE:-groq}
+      GROQ_API_KEY: ${GROQ_API_KEY:-}
+      GROQ_MODEL: ${GROQ_MODEL:-openai/gpt-oss-20b}
+      APP_ENV: development
+    depends_on:
+      database:
+        condition: service_healthy
+volumes:
+  postgres_data:
