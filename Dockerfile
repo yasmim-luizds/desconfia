@@ -12,7 +12,10 @@ WORKDIR /app/backend
 COPY backend/requirements.txt backend/requirements-lock.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 COPY backend/app ./app
+COPY backend/alembic.ini ./alembic.ini
+COPY backend/migrations ./migrations
+COPY backend/start.sh ./start.sh
 COPY --from=web /build/dist /app/frontend/dist
 RUN useradd --create-home desconfia && chown -R desconfia:desconfia /app
 USER desconfia
-CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000} --workers 1"]
+CMD ["sh", "./start.sh"]

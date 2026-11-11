@@ -1,4 +1,5 @@
 from datetime import datetime
+from contextlib import asynccontextmanager
 from pathlib import Path
 import os
 import logging
@@ -6,6 +7,7 @@ import logging
 from fastapi import Depends, FastAPI, HTTPException, status, Request, Query, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from fastapi.responses import JSONResponse
 from sqlalchemy import select, text
 from sqlalchemy.exc import SQLAlchemyError, IntegrityError
 from sqlalchemy.orm import Session, selectinload
@@ -24,13 +26,28 @@ from .schemas import (
 )
 from .security import create_access_token, get_current_user, hash_password, normalize_email, verify_password
 from . import ai
-from .config import AI_MODE, GROQ_MODEL
+from .config import AI_MODE, GROQ_MODEL, PRODUCTION
 from .limits import check_limit
+from .quota import reserve_attempt
+from .schema import prepare_schema
 
 logging.basicConfig(level=logging.INFO)
-Base.metadata.create_all(bind=engine)
-app = FastAPI(title='Desconfia API', version='0.1.0', description='API local para análise de mensagens suspeitas.')
-app.add_middleware(CORSMiddleware, allow_origins=os.getenv('CORS_ORIGINS', 'http://localhost:5173,http://127.0.0.1:5173').split(','), allow_methods=['GET', 'POST', 'DELETE'], allow_headers=['Authorization', 'Content-Type'])
+@asynccontextmanager
+async def lifespan(app):
+    prepare_schema(engine, PRODUCTION)
+    yield
+
+
+app = FastAPI(title='Desconfia API', version='0.1.0', description='API para análise de mensagens suspeitas.', lifespan=lifespan)
+app.add_middleware(CORSMiddleware, allow_origins=os.getenv('CORS_ORIGINS', 'http://localhost:5173,http://127.0.0.1:5173').split(','), allow_methods=['GET', 'POST', 'DELETE'], allow_headers=['Authorization', 'Content-Type'], expose_headers=['Retry-After', 'X-Error-Code'])
+
+
+@app.exception_handler(SQLAlchemyError)
+async def database_failure(request, exc):
+    # Do not log exception text: SQL parameters can contain messages or credentials.
+    logging.getLogger('desconfia.database').error('database_failure type=%s', type(exc).__name__)
+    return JSONResponse(status_code=503, content={'detail': 'Não foi possível concluir a operação no banco. Tente novamente mais tarde.'},
+                        headers={'X-Error-Code': 'database_unavailable'})
 
 
 @app.middleware('http')
@@ -127,13 +144,14 @@ def create_analysis(payload: AnalysisCreateRequest, current_user: User = Depends
     if AI_MODE == 'demo':
         risk, explanation, recommendation, indicators = local_analyze(payload.message_text)
     else:
+        reserve_attempt(db)
         try:
             result = ai.analyze(payload.message_text)
         except ai.AIError as exc:
             raise HTTPException(status_code=exc.status_code, detail=str(exc)) from exc
         risk, explanation, recommendation = result.risk_level, result.explanation, result.recommendation
         indicators = [(item.category, item.description, item.evidence) for item in result.indicators]
-    analysis = Analysis(user_id=current_user.id, message_text=payload.message_text if payload.store_message else '', risk_level=risk.value, explanation=explanation, recommendation=recommendation, ai_provider='local-demo' if AI_MODE == 'demo' else 'groq', ai_model='rules-v0' if AI_MODE == 'demo' else GROQ_MODEL, completed_at=datetime.utcnow())
+    analysis = Analysis(user_id=current_user.id, message_text=payload.message_text if payload.store_message else '', risk_level=risk.value, explanation=explanation, recommendation=recommendation, ai_provider='local-demo' if AI_MODE == 'demo' else 'groq', ai_model='rules-v0' if AI_MODE == 'demo' else GROQ_MODEL, prompt_version=None if AI_MODE == 'demo' else ai.PROMPT_VERSION, completed_at=datetime.utcnow())
     for category, description, evidence in indicators:
         analysis.indicators.append(AnalysisIndicator(category=category.value, description=description, evidence=evidence if payload.store_message else None))
     db.add(analysis)
