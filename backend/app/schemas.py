@@ -54,6 +54,7 @@ class AnalysisResponse(BaseModel):
     recommendation: str
     ai_provider: str
     ai_model: str | None
+    prompt_version: str | None = None
     created_at: datetime
     completed_at: datetime | None
     indicators: list[IndicatorResponse] = []

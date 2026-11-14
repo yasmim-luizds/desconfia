@@ -1,6 +1,29 @@
 name: Tests
 on: [push, pull_request]
 jobs:
+  postgres:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: desconfia
+          POSTGRES_PASSWORD: ci-only-disposable
+          POSTGRES_DB: desconfia_test
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U desconfia -d desconfia_test"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install -r backend/requirements.txt
+      - run: python -m pytest -q tests/test_postgres.py
+        working-directory: backend
+        env:
+          TEST_POSTGRES_URL: postgresql+psycopg://desconfia:ci-only-disposable@localhost:5432/desconfia_test
   backend:
     runs-on: ubuntu-latest
     steps:
@@ -24,3 +47,8 @@ jobs:
         working-directory: frontend
       - run: pnpm test && pnpm build
         working-directory: frontend
+  image:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker build --tag desconfia-ci .
