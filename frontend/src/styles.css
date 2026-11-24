@@ -75,3 +75,14 @@ input:not([type=checkbox]):focus-visible,textarea:focus-visible{outline:3px soli
 
 /* Erro de login e cadastro exibido junto ao botão do formulário. */
 .form-error{border:1px solid #f49a9a;background:#fff0f0;border-radius:9px;color:#b4232e;padding:13px 18px;margin-top:20px;font-size:14px;line-height:1.5}
+
+/* Ajustes C3: alinhamento do cabeçalho mobile, área clicável do checkbox e ícones nos badges do histórico. */
+.history-card .badge{display:inline-flex;align-items:center;gap:6px}
+.auth-card .checkbox{display:inline-flex;width:fit-content}
+.header nav>button:not(.button){white-space:nowrap}
+@media(max-width:650px){
+  .header{padding:0 14px;gap:8px}
+  .brand{font-size:20px;gap:7px}
+  .brand-icon{width:28px;height:32px}
+  .header nav{gap:10px}
+}

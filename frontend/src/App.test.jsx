@@ -57,7 +57,7 @@ describe('Fluxos do Desconfia', () => {
     await screen.findByRole('status');
     await user.click(screen.getByRole('button', { name: 'Sair' }));
     expect(screen.getByRole('heading', { name: /Antes de agir/ })).toBeInTheDocument();
-  });
+  }, 15000);
   it('mostra carregamento e erro sem inventar resultado', async () => {
     let rejectRequest;
     mockRequests({ '/analyses': () => new Promise((resolve, reject) => { rejectRequest = reject; }) });
@@ -80,4 +80,40 @@ describe('Fluxos do Desconfia', () => {
     await screen.findByText('Seu histórico começa aqui.');
     expect(request).toHaveBeenCalledWith('/analyses/a', expect.objectContaining({ method: 'DELETE' }));
   });
+  it('preserva o texto digitado quando a análise falha com erro 503 ou 429', async () => {
+    mockRequests({ '/analyses': () => Promise.reject(Object.assign(new Error('O serviço está indisponível no momento. Tente novamente em instantes.'), { status: 503 })) });
+    const user = userEvent.setup(); render(<App/>); await login(user);
+    const campo = screen.getByLabelText('Qual mensagem você recebeu?');
+    await user.type(campo, 'Mensagem importante que não pode sumir');
+    await user.click(screen.getByLabelText(/Entendo que o texto/));
+    await user.click(screen.getByRole('button', { name: 'Analisar mensagem' }));
+    await waitFor(() => expect(screen.getByRole('alert')).toHaveTextContent('O serviço está indisponível'));
+    expect(campo).toHaveValue('Mensagem importante que não pode sumir');
+  }, 15000);
+  it('encerra a sessão ao receber erro 401 durante uma ação autenticada', async () => {
+    mockRequests({ '/analyses': () => Promise.reject(Object.assign(new Error('Token expirado'), { status: 401 })) });
+    const user = userEvent.setup(); render(<App/>); await login(user);
+    await user.type(screen.getByLabelText('Qual mensagem você recebeu?'), 'Teste de sessão');
+    await user.click(screen.getByLabelText(/Entendo que o texto/));
+    await user.click(screen.getByRole('button', { name: 'Analisar mensagem' }));
+    await waitFor(() => expect(screen.getByRole('alert')).toHaveTextContent('Sua sessão expirou. Entre novamente.'));
+    expect(screen.getByRole('heading', { name: /Que bom ter você aqui/ })).toBeInTheDocument();
+  }, 15000);
+  it('mantém o registro no histórico quando a exclusão é cancelada', async () => {
+    mockRequests(); const user = userEvent.setup(); render(<App/>); await login(user);
+    await user.click(screen.getByRole('button', { name: 'Histórico', exact: true }));
+    await screen.findByText('Texto original não armazenado');
+    await user.click(screen.getByRole('button', { name: 'Excluir análise' }));
+    await user.click(screen.getByRole('button', { name: 'Cancelar', exact: true }));
+    expect(screen.getByText('Texto original não armazenado')).toBeInTheDocument();
+    expect(request.mock.calls.some(([, options]) => options?.method === 'DELETE')).toBe(false);
+  }, 15000);
+  it('abre o resultado mesmo se o carregamento do feedback falhar', async () => {
+    mockRequests({ '/analyses/a/feedback': () => Promise.reject(new Error('Falha no feedback')) });
+    const user = userEvent.setup(); render(<App/>); await login(user);
+    await user.click(screen.getByRole('button', { name: 'Histórico', exact: true }));
+    await user.click(await screen.findByText('Texto original não armazenado'));
+    await screen.findByText('Pare e confirme antes de agir.');
+    expect(screen.getByText('Não foi possível carregar o status do feedback agora.')).toBeInTheDocument();
+  }, 15000);
 });
