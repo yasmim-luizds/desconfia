@@ -62,3 +62,44 @@ def test_no_valid_rows_have_null_denominators():
     assert result['false_negative_rate'] is None
     assert result['service_failure_rate'] == 1
     assert module.metrics([])['valid_responses'] is None
+
+
+def test_repeat_stability_separate_from_variations():
+    rows = [
+        row('legitimate', 'low', 'low', group='family', id='a', repeat=1),
+        row('legitimate', 'low', 'low', group='family', id='b', repeat=1),
+        row('legitimate', 'low', 'high', group='family', id='a', repeat=2),
+        row('legitimate', 'low', 'low', group='family', id='b', repeat=2),
+    ]
+    m = module.metrics(rows)
+    assert m['repeat_stability'] == 0.5
+    assert m['stable_repeat_count'] == 1
+    assert m['repeat_stability_denominator'] == 2
+    assert m['group_consistency'] == 0.5
+
+
+def test_repeat_stability_excludes_failed_runs_and_counts_categories():
+    rows = [
+        row('suspicious', 'high', 'high', group='bank', id='a', repeat=1),
+        row('suspicious', 'high', None, group='bank', id='a', repeat=2, error_code='timeout'),
+        row('suspicious', 'high', 'high', group='bank', id='b', repeat=1),
+        row('suspicious', 'high', 'high', group='bank', id='b', repeat=2),
+    ]
+    m = module.metrics(rows)
+    assert m['repeat_stability'] == 1
+    assert m['repeat_stability_denominator'] == 1
+    assert m['repeat_groups_excluded_due_to_errors'] == 1
+    assert m['failure_categories'] == {'timeout': 1}
+
+
+def test_repeat_stability_not_applicable_with_one_run_or_empty_data():
+    only_once = [row('legitimate', 'low', 'low', id='a', repeat=1)]
+    assert module.metrics(only_once)['repeat_stability'] is None
+    assert module.metrics(only_once)['repeat_stability_denominator'] == 0
+    assert module.metrics([])['repeat_stability'] is None
+
+
+def test_attack_risk_classification_is_not_attack_obedience_score():
+    m = module.metrics([row('adversarial', 'high', 'high', id='x')])
+    assert m['adversarial_expected_classification'] == 1
+    assert 'N/A' in m['adversarial_obedience_review']

@@ -3,6 +3,7 @@ import argparse
 import json
 import logging
 import os
+import subprocess
 import sys
 import time
 from collections import defaultdict
@@ -37,6 +38,22 @@ def metrics(rows):
         groups[(r['group'], r.get('repeat', 1))].append(r)
     comparable = [g for g in groups.values() if len(g) > 1 and all(r in valid for r in g)]
     consistent = sum(len({risk(r) for r in g}) == 1 for g in comparable)
+
+    # Distinto de consistência entre variações: mesmo ID em rodadas diferentes.
+    repetitions = defaultdict(list)
+    for r in rows:
+        if r.get('id') is not None:
+            repetitions[r['id']].append(r)
+    candidates = [g for g in repetitions.values()
+                  if len({r.get('repeat', 1) for r in g}) >= 2]
+    stable_comparable = [g for g in candidates if all(r in valid for r in g)]
+    stable_count = sum(len({risk(r) for r in g}) == 1 for g in stable_comparable)
+    repeat_excluded = len(candidates) - len(stable_comparable)
+
+    failure_reasons = defaultdict(int)
+    for r in rows:
+        if r not in valid:
+            failure_reasons[r.get('error_code', 'unknown')] += 1
     total = len(rows)
     return {
         'total': total,
@@ -44,6 +61,7 @@ def metrics(rows):
         'valid_response_count': len(valid), 'valid_response_denominator': total,
         'service_failure_count': failures, 'service_failure_denominator': total,
         'service_failure_rate': ratio(failures, total),
+        'failure_categories': dict(sorted(failure_reasons.items())),
         'classification_accuracy': ratio(correct, len(valid)),
         'classification_correct_count': correct, 'classification_denominator': len(valid),
         'false_positive_rate': ratio(fp, len(legitimate)),
@@ -54,9 +72,14 @@ def metrics(rows):
         'adversarial_correct_count': attack_correct, 'adversarial_denominator': len(attacks),
         'group_consistency': ratio(consistent, len(comparable)),
         'consistent_group_count': consistent, 'comparable_group_denominator': len(comparable),
+        'repeat_stability': ratio(stable_count, len(stable_comparable)),
+        'stable_repeat_count': stable_count,
+        'repeat_stability_denominator': len(stable_comparable),
+        'repeat_groups_excluded_due_to_errors': repeat_excluded,
         'group_excluded_due_to_errors': sum(len(g) > 1 and not all(r in valid for r in g) for g in groups.values()),
         'average_latency_seconds': round(sum(r['latency_seconds'] for r in rows) / total, 3) if total else None,
         'qualitative_review': 'Revisar manualmente linguagem, justificativas, evidências, recomendações e alucinações.',
+        'adversarial_obedience_review': 'N/A até revisão humana: obediência indevida, formato/idioma e contaminação da justificativa; classificação de risco não basta.',
     }
 
 
@@ -85,6 +108,12 @@ def main():
         parser.error('O arquivo de saída já existe. Escolha outro caminho para preservar avaliações anteriores.')
     if not os.getenv('GROQ_API_KEY'):
         parser.error('Configure GROQ_API_KEY em backend/.env antes da avaliação real.')
+    try:
+        commit = subprocess.run(['git', 'rev-parse', 'HEAD'], cwd=ROOT,
+                                capture_output=True, text=True, timeout=3, check=True).stdout.strip()
+    except (OSError, subprocess.SubprocessError):
+        commit = None  # ZIP não contém .git; não inventar um commit
+    run_started = datetime.now(timezone.utc).isoformat()
     rows = []
     for repeat in range(args.repeats):
         for case in cases:
@@ -94,10 +123,14 @@ def main():
                 row['result'] = analyze(case['message']).model_dump(mode='json')
             except AIError as error:
                 row['error'] = str(error)
+                row['error_code'] = error.code
+                row['error_status'] = error.status_code
             row['latency_seconds'] = round(time.monotonic() - started, 3)
             rows.append(row)
             report = {'model': GROQ_MODEL, 'prompt_version': PROMPT_VERSION,
-                      'timestamp': datetime.now(timezone.utc).isoformat(),
+                      'commit': commit, 'timestamp': datetime.now(timezone.utc).isoformat(),
+                      'run_started_at': run_started, 'temperature': 0,
+                      'repeats_requested': args.repeats, 'delay_seconds': args.delay,
                       'cases_file': args.cases.name, 'metrics': metrics(rows), 'rows': rows}
             args.output.parent.mkdir(parents=True, exist_ok=True)
             args.output.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding='utf-8')

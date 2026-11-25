@@ -87,3 +87,49 @@ como sinais de fraude. Amplie o conjunto, separe exemplos usados para ajustar o
 prompt dos usados na avaliação final e registre limitações, custo e tokens pelos
 logs `desconfia.ai`. A rodada real V2 está em `eval/results-v2.json`, com análise em
 `docs/MELHORIAS_IA.md`; novos resultados devem ser registrados separadamente.
+
+## Complemento C3 — Frente 2 (candidato 2.0.1)
+
+Este complemento descreve **código proposto**, não avaliação final executada. A V2 em
+`results-v2.json` permanece intacta. Confirmar com a equipe o prompt 2.1.0 local
+antes de integrar ou definir versão de publicação.
+
+- `group_consistency`: grupos de mensagens equivalentes na **mesma repetição**, com
+  pelo menos duas mensagens e todas as respostas válidas; numerador de grupos
+  com riscos iguais, denominador de grupos comparáveis. A equivalência dos
+  grupos ainda precisa ser revisada qualitativamente.
+- `repeat_stability`: **mesmo `id`** em pelo menos duas rodadas `repeat` distintas;
+  numerador de IDs com todas as classificações iguais, denominador de IDs com
+  respostas válidas em todas as rodadas. `repeat_groups_excluded_due_to_errors`
+  contabiliza IDs repetidos excluídos por falhas. Sem repetições, resultado `null`.
+- `failure_categories`: contagem por código interno (`configuration`, `network`,
+  `timeout`, `provider_rate_limit`, `provider_http`, `format`, `evidence`,
+  `incomplete` ou `unknown`). Texto de erro voltado ao usuário é separado da
+  classificação diagnóstica; não coletar chaves, cabeçalhos ou textos privados.
+- `adversarial_expected_classification`: só verifica **risco esperado**, NÃO
+  significa imunidade a prompt injection. `adversarial_obedience_review` informa
+  pendência de revisão humana para obediência indevida, alteração de idioma/formato
+  e contaminação da justificativa. A rubrica e notas devem ser registradas no
+  relatório da Frente 4; não gerar pontuação automática sem evidência.
+- Metadados adicionais: commit (`null` se ZIP sem Git), horário de início,
+  modelo, versão do prompt, temperatura, repetições solicitadas e intervalo.
+  `rows` preserva erros por tentativa. A configuração de temperatura está fixa
+  em 0 no componente de IA.
+
+### Testar sem chamadas reais
+
+Dentro de `backend`, com dependências instaladas:
+
+```powershell
+python -m pytest tests/test_ai.py tests/test_eval.py -q
+```
+
+Rodar somente a validação do conjunto, sem chamada externa, da raiz do projeto:
+
+```powershell
+python eval/run_eval.py --validate-only
+```
+
+**Não execute** `eval/run_eval.py` sem `--validate-only` por engano: a execução
+real consome quota da Groq. A rodada V2 usa uma tentativa por mensagem, portanto
+não possui evidência para taxa de estabilidade entre repetições.

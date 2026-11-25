@@ -70,7 +70,7 @@ def test_untrusted_message_is_separate(monkeypatch):
 
 def test_prompt_v2_colloquial_and_safety_guidance():
     prompt = ai.SYSTEM_PROMPT.lower()
-    assert ai.PROMPT_VERSION == '2.0.0'
+    assert ai.PROMPT_VERSION == '2.0.1'
     for fragment in ('agr', 'abreviações', 'ortografia', 'risco', 'português', 'nunca garanta', 'não invente'):
         assert fragment in prompt
 
@@ -97,3 +97,31 @@ def test_exact_evidence_with_abbreviation(monkeypatch):
     assert ai.analyze('manda pix agr').indicators[0].evidence == 'manda pix agr'
     with pytest.raises(ai.AIError):
         ai.analyze('manda PIX agora')
+
+
+def test_prompt_temporal_and_document_guidance():
+    prompt = ai.SYSTEM_PROMPT.lower()
+    for fragment in ('tempos verbais', 'familiar', 'documento pessoal', 'isolamento', 'trecho literalmente'):
+        assert fragment in prompt
+
+
+@pytest.mark.parametrize('status,code', [(429, 'provider_rate_limit'), (500, 'provider_http')])
+def test_diagnostic_error_codes_for_http(monkeypatch, status, code):
+    mock_provider(monkeypatch, status=status, payload={})
+    with pytest.raises(ai.AIError) as raised:
+        ai.analyze('Teste')
+    assert raised.value.code == code
+
+
+def test_diagnostic_error_code_for_evidence(monkeypatch):
+    mock_provider(monkeypatch, payload=completion(VERDICT))
+    with pytest.raises(ai.AIError) as raised:
+        ai.analyze('Bom dia')
+    assert raised.value.code == 'evidence'
+
+
+def test_diagnostic_error_code_for_network(monkeypatch):
+    mock_provider(monkeypatch, exception=httpx.ConnectError('network unavailable'))
+    with pytest.raises(ai.AIError) as raised:
+        ai.analyze('Teste')
+    assert raised.value.code == 'network'
