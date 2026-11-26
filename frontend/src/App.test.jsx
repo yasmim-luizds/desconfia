@@ -80,8 +80,8 @@ describe('Fluxos do Desconfia', () => {
     await screen.findByText('Seu histórico começa aqui.');
     expect(request).toHaveBeenCalledWith('/analyses/a', expect.objectContaining({ method: 'DELETE' }));
   });
-  it('preserva o texto digitado quando a análise falha com erro 503 ou 429', async () => {
-    mockRequests({ '/analyses': () => Promise.reject(Object.assign(new Error('O serviço está indisponível no momento. Tente novamente em instantes.'), { status: 503 })) });
+  it.each([429, 503, 504])('preserva o texto digitado quando a análise falha com erro %s', async status => {
+    mockRequests({ '/analyses': () => Promise.reject(Object.assign(new Error('O serviço está indisponível no momento. Tente novamente em instantes.'), { status })) });
     const user = userEvent.setup(); render(<App/>); await login(user);
     const campo = screen.getByLabelText('Qual mensagem você recebeu?');
     await user.type(campo, 'Mensagem importante que não pode sumir');
@@ -115,5 +115,62 @@ describe('Fluxos do Desconfia', () => {
     await user.click(await screen.findByText('Texto original não armazenado'));
     await screen.findByText('Pare e confirme antes de agir.');
     expect(screen.getByText('Não foi possível carregar o status do feedback agora.')).toBeInTheDocument();
+  }, 15000);
+  it('encerra a sessão quando a consulta de feedback retorna 401', async () => {
+    mockRequests({ '/analyses/a/feedback': () => Promise.reject(Object.assign(new Error('Token expirado'), { status: 401 })) });
+    const user = userEvent.setup(); render(<App/>); await login(user);
+    await user.click(screen.getByRole('button', { name: 'Histórico', exact: true }));
+    await user.click(await screen.findByText('Texto original não armazenado'));
+    await screen.findByText('Sua sessão expirou. Entre novamente.');
+    expect(screen.getByRole('heading', { name: /Que bom ter você aqui/ })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Sair' })).not.toBeInTheDocument();
+  }, 15000);
+  it('permite tentar carregar o feedback novamente após uma falha temporária', async () => {
+    let attempts = 0;
+    mockRequests({ '/analyses/a/feedback': async () => {
+      attempts++;
+      if (attempts === 1) throw Object.assign(new Error('Indisponível'), { status: 503 });
+      return { is_helpful: true };
+    } });
+    const user = userEvent.setup(); render(<App/>); await login(user);
+    await user.click(screen.getByRole('button', { name: 'Histórico', exact: true }));
+    await user.click(await screen.findByText('Texto original não armazenado'));
+    await user.click(await screen.findByRole('button', { name: 'Tentar carregar feedback novamente' }));
+    await screen.findByText('Obrigado! Seu feedback foi registrado.');
+    expect(attempts).toBe(2);
+    expect(screen.queryByRole('button', { name: 'Enviar feedback' })).not.toBeInTheDocument();
+  }, 15000);
+  it('recupera o feedback salvo depois de um conflito sem repetir o envio', async () => {
+    mockRequests({ '/analyses/a/feedback': async options => {
+      if (options?.method === 'POST') throw Object.assign(new Error('Já recebido'), { status: 409 });
+      return { is_helpful: true };
+    } });
+    const user = userEvent.setup(); render(<App/>); await login(user);
+    await user.click(screen.getByRole('button', { name: 'Usar um exemplo' }));
+    await user.click(screen.getByLabelText(/Entendo que o texto/));
+    await user.click(screen.getByRole('button', { name: 'Analisar mensagem' }));
+    await screen.findByText('Pare e confirme antes de agir.');
+    await user.click(screen.getByRole('button', { name: 'Sim', exact: true }));
+    await user.click(screen.getByRole('button', { name: 'Enviar feedback' }));
+    await screen.findByText('Obrigado! Seu feedback foi registrado.');
+    expect(request.mock.calls.filter(([path, options]) => path === '/analyses/a/feedback' && options?.method === 'POST')).toHaveLength(1);
+  }, 15000);
+  it.each([401, 503])('trata erro %s ao consultar o feedback após conflito', async status => {
+    mockRequests({ '/analyses/a/feedback': async options => {
+      throw Object.assign(new Error('Feedback indisponível'), { status: options?.method === 'POST' ? 409 : status });
+    } });
+    const user = userEvent.setup(); render(<App/>); await login(user);
+    await user.click(screen.getByRole('button', { name: 'Usar um exemplo' }));
+    await user.click(screen.getByLabelText(/Entendo que o texto/));
+    await user.click(screen.getByRole('button', { name: 'Analisar mensagem' }));
+    await screen.findByText('Pare e confirme antes de agir.');
+    await user.click(screen.getByRole('button', { name: 'Sim', exact: true }));
+    await user.click(screen.getByRole('button', { name: 'Enviar feedback' }));
+    if (status === 401) {
+      await screen.findByText('Sua sessão expirou. Entre novamente.');
+    } else {
+      await screen.findByRole('button', { name: 'Tentar carregar feedback novamente' });
+      expect(screen.queryByText('Obrigado! Seu feedback foi registrado.')).not.toBeInTheDocument();
+    }
   }, 15000);
 });

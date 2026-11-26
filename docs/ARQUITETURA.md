@@ -41,8 +41,7 @@ Usuário 1:N Análise; Análise 1:N Sinal; Análise 1:N Feedback na estrutura,
 com unicidade de análise + usuário. O controle de acesso permite somente ao dono
 avaliar sua análise, resultando em um feedback por análise no fluxo atual.
 
-SQLAlchemy usa os mesmos modelos para SQLite (demonstração) e PostgreSQL
-(implantação). O banco antigo não é apagado nem migrado para a nuvem automaticamente.
+SQLAlchemy usa os mesmos modelos para SQLite e PostgreSQL. Na execução manual local, sem `DATABASE_URL`, o padrão é SQLite; o Compose define PostgreSQL para a validação desse banco. A demonstração local é o escopo da C2. A hospedagem planejada para a C3 ainda não foi configurada, e nenhum banco local é migrado para a nuvem automaticamente.
 
 ## Testes versus avaliação
 
@@ -50,3 +49,10 @@ Pytest verifica contratos e falhas com serviço externo simulado. Vitest verific
 interações das telas. A avaliação em `eval/` chama a Groq real e mede classificações;
 revisão humana complementa a análise de explicações, recomendações e alucinações.
 Uma suíte de testes passando não comprova qualidade do modelo de IA.
+
+A rodada V2 de 24/10/2026 está registrada em `eval/results-v2.json` para 15 casos
+sintéticos. A revisão individual está em `docs/REVISAO_QUALITATIVA_27.10.2026.md`
+na branch `testes-c2`; o PR #5 foi integrado à `base-c2` no commit `1702dc6`.
+A segunda revisão independente e o consenso ainda estão pendentes. Esses resultados
+são exploratórios e não comprovam precisão geral, segurança ou resistência ampla a
+ataques.

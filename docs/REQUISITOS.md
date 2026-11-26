@@ -9,17 +9,17 @@ Não há alegação de melhoria comprovada de comportamento da comunidade.
 | Cadastro e login | formulários React, `/auth/register`, `/auth/login` | Pytest + Vitest |
 | Logout | limpeza de sessão em memória | Vitest |
 | Envio textual | validação de 1–2000 caracteres e consentimento na interface | Pytest + Vitest |
-| Groq | `backend/app/ai.py`, timeout, erros, JSON Schema | testes HTTP simulados; chamada real pendente de chave |
+| Groq | `backend/app/ai.py`, timeout, erros, JSON Schema | testes HTTP simulados; rodada real V2 em `eval/results-v2.json`, com revisão independente/consenso pendentes |
 | Risco baixo/médio/alto | enum validado, cartão de resultado | Pytest + Vitest |
 | Sinais e explicação | categorias validadas, citações verificadas, texto simples | testes de formato; qualidade depende da eval |
 | Recomendações | resultado e prompt preventivo | Vitest; revisão humana na eval |
 | Histórico | paginação, autorização por usuário, detalhes | Pytest + Vitest |
 | Feedback | útil/não útil, comentário opcional, uma avaliação por análise | Pytest + Vitest |
 | Minimização | texto/evidências não salvos por padrão, opt-in e exclusão | Pytest |
-| Banco PostgreSQL | driver psycopg, URL configurável, Compose | estrutura implementada; execução PostgreSQL pendente |
-| Testes | Pytest, Vitest, workflow CI | execução local registrada em VALIDACAO.md |
-| Eval | 15 casos sintéticos, métricas e rubrica qualitativa | conjunto e cálculo testados; métricas reais pendentes |
-| Publicação | Dockerfile, configurações e guia | publicação adiada conforme escolha da usuária |
+| Banco PostgreSQL | driver psycopg, URL configurável, Compose | validação local por Docker/PostgreSQL relatada em `VALIDACAO_PUBLICACAO.md`; instalação manual sem `DATABASE_URL` usa SQLite |
+| Testes | Pytest, Vitest, workflow CI | execução local histórica em `VALIDACAO.md`; checks de CI verdes na branch `testes-c2` conforme `VALIDACAO_PUBLICACAO.md` |
+| Eval | 15 casos sintéticos, métricas e rubrica qualitativa | rodada real V2 registrada; conjunto pequeno, revisão independente e consenso pendentes |
+| Publicação | Dockerfile, Compose e guia | C2: demonstração local, sem URL pública; C3: hospedagem planejada, provedor e URL ainda a definir |
 
 ## Segurança e privacidade
 
@@ -52,5 +52,4 @@ invalida tokens já copiados; para revogação imediata, adicionar sessões pers
 - C2 (30/10/2026): configurar Groq, testar PostgreSQL, executar os casos de eval,
   revisar resultados e documentar evidências do protótipo funcional.
 - C3 (04/12/2026): ampliar e revisar o conjunto, consolidar métricas, configurar
-  hospedagem, verificar o fluxo publicado e atualizar a documentação final.
-
+  hospedagem, verificar o fluxo publicado e atualizar a documentação com o provedor e a URL escolhidos.

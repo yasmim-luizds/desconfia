@@ -1,105 +1,133 @@
 # Desconfia
 
-Aplicação web do Projeto Integrador IV para apoiar a identificação de indícios de
-golpes em mensagens textuais. Referência principal: relatório de planejamento
-Desconfia. A proposta anterior foi usada apenas como apoio.
+**Antes de clicar, desconfia.**
 
-## Comece aqui no Windows
+O Desconfia é uma aplicação web de apoio à identificação de indícios de golpes digitais em mensagens de texto. Desenvolvido no Projeto Integrador IV, o projeto combina Inteligência Artificial, cibersegurança e testes de software para ajudar pessoas a reconhecer sinais de engenharia social e tomar decisões mais informadas.
 
-1. Abra `iniciar_demo.bat` nesta pasta.
-2. Aguarde a instalação e a mensagem de que o servidor está disponível.
-3. Abra http://127.0.0.1:8000 no navegador.
-4. Crie uma conta e use a mensagem de exemplo.
+A pessoa insere uma mensagem recebida por aplicativos de mensagens, SMS, e-mail ou redes sociais. A aplicação analisa o texto e apresenta um nível de risco, os sinais identificados, uma explicação e recomendações preventivas.
 
-O modo demonstração funciona sem conta na Groq, usando regras locais e um aviso
-visível. Ele permite testar as telas; não representa a qualidade de uma IA.
-O terminal precisa continuar aberto. Ctrl+C encerra o servidor. A primeira execução
-precisa de internet para instalar dependências. O script usa Python/Node instalados
-ou, neste computador, os runtimes disponíveis no Codex.
+> O resultado é uma avaliação de risco, não uma confirmação de fraude. A IA pode errar: risco baixo não garante que uma mensagem seja segura. Confirme solicitações por um canal oficial ou contato previamente conhecido.
 
-Em outro computador: Python 3.12+, Node.js 22+ e pnpm 11.25.0 (`npm install -g pnpm@11.25.0`).
+## Objetivo e público
 
-## Ativar a IA real
+Mensagens fraudulentas podem imitar empresas ou pessoas conhecidas, criar urgência, ameaçar o bloqueio de uma conta ou solicitar dinheiro e informações sensíveis. Esses elementos nem sempre são fáceis de reconhecer isoladamente.
 
-1. Crie sua conta na Groq e gere uma chave: https://console.groq.com/keys.
-2. Abra `backend/.env`, já preparado neste computador. Em outro computador, copie `backend/.env.example` para `backend/.env`.
-3. Preencha `GROQ_API_KEY` e mantenha `AI_MODE=groq`. Um segredo de sessão já foi gerado localmente; em outra instalação, gere `DESCONFIA_SECRET_KEY`.
-4. Execute `iniciar_local.bat`. Não use `iniciar_demo.bat` para testar a Groq.
+O projeto busca oferecer uma segunda análise, com linguagem compreensível, e contribuir para a conscientização sobre os padrões utilizados em golpes digitais. O público considerado inicialmente é formado por estudantes universitários e familiares adultos que utilizam serviços e canais digitais no cotidiano, com diferentes níveis de familiaridade com segurança digital.
 
-Comando para gerar o segredo (rode localmente e copie o resultado para o arquivo):
+A ferramenta apoia a avaliação humana e não substitui os canais oficiais das instituições nem mecanismos especializados de segurança. Seu potencial de apoio à comunidade é um objetivo do projeto; resultados técnicos, por si só, não comprovam redução de golpes ou mudança de comportamento.
 
-```powershell
-.\.venv\Scripts\python.exe -c "import secrets; print(secrets.token_urlsafe(48))"
-```
+## Funcionalidades
 
-A chave fica somente no back-end. Não a coloque em variáveis `VITE_`, arquivos
-versionados, imagens ou mensagens. O modelo padrão é `openai/gpt-oss-20b`, com
-resposta estruturada e validação adicional no servidor. Pode ser trocado por outro
-modelo Groq compatível com JSON Schema estrito em `GROQ_MODEL`.
-Fonte: https://console.groq.com/docs/structured-outputs.
+- Cadastro, login e logout.
+- Análise de mensagens textuais de até 2.000 caracteres.
+- Classificação em risco baixo, médio ou alto.
+- Apresentação dos sinais identificados e dos trechos que sustentam a análise.
+- Explicação do resultado e recomendações preventivas.
+- Histórico individual, consulta e exclusão de análises.
+- Feedback sobre a utilidade dos resultados.
+- Modo de demonstração com regras locais e modo de análise com IA pela Groq API.
 
-## Estrutura
+O escopo é a análise do texto inserido pelo usuário. A aplicação não lê automaticamente conversas, imagens, capturas de tela, QR Codes, áudios, vídeos ou o conteúdo de páginas externas.
 
-| Pasta | Função |
+## Como funciona
+
+1. O usuário acessa sua conta e insere uma mensagem para análise.
+2. A interface envia a solicitação ao backend.
+3. No modo com IA, o backend consulta um modelo de linguagem pela Groq API.
+4. O backend valida o formato da resposta e os trechos apresentados como evidência.
+5. A interface exibe o resultado, que pode ser consultado no histórico e receber feedback.
+
+O conteúdo da mensagem é tratado como dado para análise. As instruções do modelo e os casos de avaliação consideram tentativas de manipulação por *prompt injection*, sem pressupor proteção absoluta contra esse tipo de ataque.
+
+## Tecnologias
+
+| Componente | Tecnologias |
 |---|---|
-| `frontend/` | React + JavaScript + Vite, interface responsiva |
-| `backend/app/` | FastAPI, autenticação, análise, histórico e feedback |
-| `backend/tests/` | Testes automatizados com Pytest e serviço de IA simulado |
-| `eval/` | Casos sintéticos e avaliação real da Groq |
-| `docs/` | Arquitetura, requisitos, privacidade e publicação |
-| `mobile/` | Protótipo anterior, preservado; não é a interface web desta entrega |
+| Interface | React, JavaScript e Vite |
+| Backend | Python e FastAPI |
+| Persistência | SQLAlchemy, PostgreSQL e SQLite para execução local |
+| Inteligência Artificial | Modelo de linguagem acessado pela Groq API |
+| Testes automatizados | Pytest e Vitest |
+| Automação e empacotamento | GitHub Actions, Docker e Docker Compose |
 
-O fluxo é navegador → FastAPI → Groq → validação → banco → resultado no navegador.
-Há cadastro, login, logout, análise, sinais, explicação, recomendação, histórico
-paginado, feedback e exclusão de análise. O token fica em memória; atualizar a
-página exige novo login. Ele expira em 8 horas. Logout remove a sessão do navegador;
-não revoga um token que tenha sido copiado antes de sair.
+Sem a configuração de `DATABASE_URL`, a aplicação utiliza SQLite local. O PostgreSQL é a opção prevista para implantação e também pode ser executado com Docker Compose.
 
-## Banco
+## Executar localmente
 
-Sem `DATABASE_URL`, usa SQLite local para facilitar a demonstração. A implantação
-prevista usa PostgreSQL via psycopg e SQLAlchemy. O modo `APP_ENV=production` exige
-PostgreSQL, segredo de pelo menos 32 caracteres e `AI_MODE=groq`.
+Prepare Python 3.12 ou superior, Node.js 22 e pnpm 11.25.0. Os scripts de inicialização instalam as dependências, compilam a interface e iniciam o servidor; a primeira execução precisa de internet.
 
-Para PostgreSQL local com Docker Desktop: copie `.env.example` da raiz para `.env`,
-preencha senhas aleatórias alfanuméricas/URL-safe e execute `docker compose up --build`.
-Use `AI_MODE=demo` nesse arquivo se ainda não tiver Groq. O volume mantém o banco.
-Não execute `docker compose down -v` se quiser preservar os dados.
+### Modo demonstração
 
-## Desenvolvimento e testes
+No Windows, abra `iniciar_demo.bat` na raiz do projeto.
 
-Back-end (a partir da pasta `backend`):
+No macOS ou Linux, execute na raiz:
 
-```powershell
-..\.venv\Scripts\python.exe -m pytest -q
-..\.venv\Scripts\python.exe -m uvicorn app.main:app --reload
+```bash
+AI_MODE=demo bash iniciar_local.sh
 ```
 
-Front-end (outro terminal, na pasta `frontend`):
+Abra [http://127.0.0.1:8000](http://127.0.0.1:8000) e crie uma conta pela interface. Mantenha o terminal aberto enquanto utiliza o sistema; `Ctrl+C` encerra o servidor.
 
-```text
-pnpm install --frozen-lockfile
-pnpm dev
-pnpm test
-pnpm build
-```
+O modo demonstração usa regras locais, não consulta a Groq e não representa a qualidade de um modelo de IA.
 
-O Vite encaminha as chamadas ao back-end em 8000. A versão compilada é servida
-pelo próprio FastAPI. Reinicie o back-end se compilou a interface pela primeira vez
-depois de iniciar o servidor. API documentada em http://127.0.0.1:8000/docs.
+### Análise com IA
 
-Na raiz: `.\.venv\Scripts\python.exe eval/run_eval.py --validate-only` valida os casos
-sem chamadas externas. Leia `eval/README.md` antes de rodar a avaliação real.
+1. Se ainda não existir, crie `backend/.env` copiando `backend/.env.example`.
+2. Configure `GROQ_API_KEY`, `AI_MODE=groq` e um segredo local em `DESCONFIA_SECRET_KEY`.
+3. Para gerar o segredo, execute `python -c "import secrets; print(secrets.token_urlsafe(48))"` e copie o resultado para a configuração local.
+4. No Windows, abra `iniciar_local.bat`. No macOS ou Linux, execute `AI_MODE=groq bash iniciar_local.sh`.
+5. Acesse [http://127.0.0.1:8000](http://127.0.0.1:8000).
 
-## Limites da entrega
+A análise real depende de conexão com a internet, chave válida e disponibilidade do serviço. A chave deve permanecer no backend: não publique arquivos `.env`, credenciais ou capturas que as exponham.
 
-- Credencial Groq e conta de hospedagem ainda não fornecidas: chamadas reais,
-  métricas de qualidade da IA e publicação dependem dessa configuração.
-- Docker/PostgreSQL precisam ser validados em um ambiente que os tenha disponíveis.
-- Os testes do serviço externo usam respostas simuladas; não demonstram resistência
-  real a prompt injection ou acurácia do modelo.
-- A aplicação não analisa imagens, áudio, QR Codes ou conteúdo de páginas externas.
-- A criação inicial de tabelas é automática; futuras mudanças de esquema exigem
-  migrações planejadas antes de atualizar um banco em produção.
+As orientações de infraestrutura, Docker e implantação estão no [guia de publicação](docs/PUBLICACAO.md). Com o servidor em execução, a documentação interativa da API está em [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs).
 
-Veja `docs/PUBLICACAO.md` e `docs/REQUISITOS.md` para os próximos passos.
+## Testes e avaliação da IA
+
+O desenvolvimento segue uma abordagem incremental: as funcionalidades são implementadas, testadas e aprimoradas progressivamente.
+
+Os testes automatizados verificam comportamentos da API e da interface, como autenticação, validação de entradas, controle de acesso, análises e tratamento de erros. A avaliação da IA é feita separadamente com mensagens sintéticas legítimas, suspeitas, ambíguas, variações linguísticas e casos adversariais.
+
+São observados a correspondência com as classificações esperadas, falsos positivos e negativos, validade das respostas, consistência e comportamento diante de tentativas de manipulação. A revisão qualitativa verifica a fidelidade das explicações ao texto e a coerência das recomendações.
+
+Os procedimentos, critérios e resultados ficam em [eval/](eval/) e nos relatórios em [docs/](docs/). Consulte o [guia de avaliação](eval/README.md) antes de executar chamadas reais. Resultados de amostras controladas não representam uma garantia de precisão em situações reais.
+
+## Privacidade
+
+O projeto adota a minimização dos dados armazenados. Por padrão, o texto original não é guardado; o usuário pode optar por salvá-lo no histórico. Ainda assim, explicações, evidências e comentários podem reproduzir informações presentes na mensagem.
+
+No modo com IA, o texto é enviado à Groq para processamento. Para testes e demonstrações, utilize mensagens inventadas, sem senhas, códigos de autenticação, dados bancários ou outras informações pessoais.
+
+A exclusão de uma análise não equivale à exclusão completa da conta. As condições de retenção e os procedimentos de privacidade devem ser definidos para o ambiente de implantação.
+
+## Organização do repositório
+
+| Caminho | Conteúdo |
+|---|---|
+| `frontend/` | Interface, estilos e testes do frontend |
+| `backend/app/` | API, autenticação, integração com IA e persistência |
+| `backend/tests/` | Testes automatizados do backend |
+| `eval/` | Casos sintéticos, programa de avaliação e resultados |
+| `docs/` | Requisitos, arquitetura, revisões e orientações técnicas |
+| `.github/workflows/` | Automação de verificações do projeto |
+| `compose.yaml` | Configuração da aplicação e do PostgreSQL com Docker |
+| `Dockerfile` | Construção da imagem da aplicação |
+
+## Documentação
+
+- [Requisitos](docs/REQUISITOS.md)
+- [Arquitetura](docs/ARQUITETURA.md)
+- [Testes funcionais](docs/TESTES_FUNCIONAIS.md)
+- [Avaliação da IA](eval/README.md)
+- [Publicação e configuração de ambientes](docs/PUBLICACAO.md)
+- [Registro dos prompts de desenvolvimento](docs/PROMPTS.md)
+
+## Equipe
+
+Projeto desenvolvido no âmbito da disciplina Projeto Integrador IV por:
+
+- Gustavo Rissoli Vicente
+- Hellen Karla Costa Campos Moraes de Melo
+- José Henrique Bessi Wolkers
+- Kaio Soares Pacheco
+- Yasmim Luiz dos Santos
