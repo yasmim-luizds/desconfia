@@ -70,7 +70,7 @@ def test_untrusted_message_is_separate(monkeypatch):
 
 def test_prompt_v2_colloquial_and_safety_guidance():
     prompt = ai.SYSTEM_PROMPT.lower()
-    assert ai.PROMPT_VERSION == '2.1.1'
+    assert ai.PROMPT_VERSION == '2.1.2'
     for fragment in ('agr', 'abreviações', 'ortografia', 'risco', 'português', 'nunca garanta', 'não invente'):
         assert fragment in prompt
 
