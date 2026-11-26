@@ -6,7 +6,7 @@ import os
 import pytest
 from fastapi import HTTPException
 from fastapi.testclient import TestClient
-from sqlalchemy import create_engine, inspect, select
+from sqlalchemy import create_engine, inspect, select, text
 from sqlalchemy.engine import make_url
 from sqlalchemy.orm import Session
 
@@ -31,10 +31,39 @@ def test_postgres_migrations_api_persistence_and_quota(monkeypatch):
         assert inspect(engine).get_table_names() == [], 'Use an empty disposable database'
         run_migration(url, 'alembic', 'upgrade', 'head')
         run_migration(url, 'alembic', 'check')
+        exercise_legacy_migration(engine, parsed)
         exercise_api(engine, monkeypatch)
         exercise_quota(engine, monkeypatch)
     finally:
         engine.dispose()
+
+
+def exercise_legacy_migration(engine, parsed_url):
+    with engine.begin() as connection:
+        connection.execute(text('CREATE SCHEMA migration_c2'))
+    legacy_url = parsed_url.update_query_dict({'options': '-csearch_path=migration_c2'}).render_as_string(hide_password=False)
+    legacy_engine = create_engine(legacy_url)
+    try:
+        run_migration(legacy_url, 'alembic', 'upgrade', '0001')
+        with legacy_engine.begin() as connection:
+            connection.execute(text("INSERT INTO users VALUES ('legacy-user', 'Pessoa Teste', 'legacy@example.com', 'hash', true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)"))
+            connection.execute(text("INSERT INTO analyses VALUES ('legacy-analysis', 'legacy-user', 'Mensagem sintética', 'high', 'Explicação', 'Recomendação', 'groq', 'modelo', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)"))
+            connection.execute(text("INSERT INTO analysis_indicators VALUES ('legacy-indicator', 'legacy-analysis', 'urgency', 'Urgência', 'sintética', CURRENT_TIMESTAMP)"))
+            connection.execute(text("INSERT INTO feedbacks VALUES ('legacy-feedback', 'legacy-analysis', 'legacy-user', true, NULL, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)"))
+            connection.execute(text('DROP TABLE alembic_version'))
+        run_migration(legacy_url, 'app.adopt_baseline')
+        run_migration(legacy_url, 'alembic', 'upgrade', 'head')
+        run_migration(legacy_url, 'alembic', 'upgrade', 'head')
+        run_migration(legacy_url, 'alembic', 'check')
+        with legacy_engine.connect() as connection:
+            assert connection.execute(text('SELECT version_num FROM alembic_version')).scalar_one() == '0002'
+            assert connection.execute(text('SELECT message_text, prompt_version FROM analyses')).one() == ('Mensagem sintética', None)
+            assert connection.execute(text('SELECT count(*) FROM users')).scalar_one() == 1
+            assert connection.execute(text('SELECT evidence FROM analysis_indicators')).scalar_one() == 'sintética'
+            assert connection.execute(text('SELECT is_helpful FROM feedbacks')).scalar_one() is True
+            assert connection.execute(text('SELECT count(*) FROM ai_quotas')).scalar_one() == 0
+    finally:
+        legacy_engine.dispose()
 
 
 def exercise_api(engine, monkeypatch):
