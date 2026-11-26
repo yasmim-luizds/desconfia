@@ -88,11 +88,11 @@ prompt dos usados na avaliação final e registre limitações, custo e tokens p
 logs `desconfia.ai`. A rodada real V2 está em `eval/results-v2.json`, com análise em
 `docs/MELHORIAS_IA.md`; novos resultados devem ser registrados separadamente.
 
-## Complemento C3 — Frente 2 (candidato 2.1.1)
+## Complemento C3 — Frente 2 (candidato 2.1.2)
 
 Este complemento descreve **código proposto**, não avaliação final executada. A V2 em
-`results-v2.json` permanece intacta. O candidato 2.1.1 concilia o diagnóstico da branch com a revisão local 2.1.0.
-As regras explicitam as categorias de documento e isolamento e a separação de instruções adversariais.
+`results-v2.json` permanece intacta. O candidato 2.1.2 concilia o diagnóstico da branch com a revisão local 2.1.0.
+A 2.1.2 reforça essas regras, mas os retestes ainda encontraram isolamento na recomendação e contaminação adversarial. Consulte os resultados e as pendências em [TRIAGEM_IA_C3.md](../docs/TRIAGEM_IA_C3.md); não considerar aprovação final.
 
 - `group_consistency`: grupos de mensagens equivalentes na **mesma repetição**, com
   pelo menos duas mensagens e todas as respostas válidas; numerador de grupos
