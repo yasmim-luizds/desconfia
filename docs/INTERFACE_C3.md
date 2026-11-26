@@ -39,7 +39,7 @@ Revisar e consolidar a experiência completa da interface do Desconfia na entreg
 
 ### 2.5 Resiliência no carregamento e envio de feedback (F31 / F32)
 * **Problema:** Ao abrir uma análise salva no histórico, uma falha na requisição secundária de feedback (`GET /analyses/{id}/feedback`) interrompia o fluxo e impedia a abertura da tela de resultado. Além disso, tentativas duplicadas de envio poderiam gerar mensagens confusas.
-* **Solução:** O carregamento de feedback em `openResult` foi isolado em bloco `try/catch` próprio para que o resultado abra mesmo se o status do feedback falhar (exibindo aviso discreto no cartão de feedback). Em `sendFeedback`, adicionada proteção contra envios repetidos e tratamento específico para conflito (`HTTP 409`).
+* **Solução:** O carregamento foi centralizado em `loadFeedback`: falhas temporárias mantêm o resultado e oferecem nova tentativa; HTTP 401 encerra a sessão. Em conflito HTTP 409, consulta o feedback efetivamente salvo; não fabrica confirmação de sucesso se a consulta falhar. Os botões impedem envios enquanto o estado não é conhecido.
 * **Arquivos:** `frontend/src/App.jsx`.
 
 ---
@@ -69,10 +69,12 @@ Todas as imagens estão armazenadas em `docs/images/c3/`.
 
 ## 5. Testes Automatizados e Build
 
+Validação adicional de 26/11/2026: HTTP 401 na consulta inicial e após conflito, recuperação de falha temporária, conflito sem repetir POST e preservação da mensagem em HTTP 429/503/504. [Execução no GitHub Actions](https://github.com/yasmim-luizds/desconfia/actions/runs/45901341188) (commit `4c7ebd9`).
+
 Foram adicionados novos testes com mocks no Vitest (`api.test.js` e `App.test.jsx`) cobrindo falhas HTTP `503`/`504`, expiração de sessão (`401`), preservação do texto digitado em falhas de análise, cancelamento de exclusão no histórico e abertura de resultado quando o carregamento do feedback falha.
 
-* **Comando de testes:** `pnpm.cmd --dir frontend test` — **22 de 22 testes passando** (`api.test.js`: 8 testes; `validacao.test.jsx`: 5 testes; `App.test.jsx`: 9 testes).
-* **Comando de compilação:** `pnpm.cmd --dir frontend build` — **Concluído sem erros** (`dist/index.html` 0.56 kB, CSS 16.65 kB, JS 246.34 kB).
+* **Comando de testes:** `pnpm.cmd --dir frontend test` — **29 de 29 testes passando** (`api.test.js`: 8 testes; `validacao.test.jsx`: 5 testes; `App.test.jsx`: 16 testes).
+* **Comando de compilação:** `pnpm.cmd --dir frontend build` — **Concluído sem erros** (`dist/index.html` 0.56 kB, CSS 16.65 kB, JS 246.64 kB).
 
 ---
 
