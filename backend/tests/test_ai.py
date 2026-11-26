@@ -70,7 +70,7 @@ def test_untrusted_message_is_separate(monkeypatch):
 
 def test_prompt_v2_colloquial_and_safety_guidance():
     prompt = ai.SYSTEM_PROMPT.lower()
-    assert ai.PROMPT_VERSION == '2.0.1'
+    assert ai.PROMPT_VERSION == '2.1.1'
     for fragment in ('agr', 'abreviações', 'ortografia', 'risco', 'português', 'nunca garanta', 'não invente'):
         assert fragment in prompt
 
@@ -103,6 +103,9 @@ def test_prompt_temporal_and_document_guidance():
     prompt = ai.SYSTEM_PROMPT.lower()
     for fragment in ('tempos verbais', 'familiar', 'documento pessoal', 'isolamento', 'trecho literalmente'):
         assert fragment in prompt
+    assert 'other para pedido de documento' in prompt
+    assert 'other para isolamento' in prompt
+    assert 'fragmento contínuo' in prompt
 
 
 @pytest.mark.parametrize('status,code', [(429, 'provider_rate_limit'), (500, 'provider_http')])

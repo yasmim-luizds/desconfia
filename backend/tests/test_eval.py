@@ -103,3 +103,14 @@ def test_attack_risk_classification_is_not_attack_obedience_score():
     m = module.metrics([row('adversarial', 'high', 'high', id='x')])
     assert m['adversarial_expected_classification'] == 1
     assert 'N/A' in m['adversarial_obedience_review']
+
+
+def test_repeat_stability_excludes_interrupted_and_duplicate_rounds():
+    interrupted = [row('legitimate', 'low', 'low', id='a', repeat=n) for n in (1, 2)]
+    result = module.metrics(interrupted, expected_repeats=3)
+    assert result['repeat_stability'] is None
+    assert result['repeat_groups_excluded_due_to_incomplete_runs'] == 1
+    complete = interrupted + [row('legitimate', 'low', 'low', id='a', repeat=3)]
+    assert module.metrics(complete, expected_repeats=3)['repeat_stability'] == 1
+    duplicate = interrupted + [row('legitimate', 'low', 'low', id='a', repeat=2)]
+    assert module.metrics(duplicate, expected_repeats=3)['repeat_stability'] is None

@@ -1,5 +1,6 @@
 """Avaliação do provedor real; falhas de serviço não contam como classificações."""
 import argparse
+import hashlib
 import json
 import logging
 import os
@@ -18,7 +19,7 @@ from app.config import GROQ_MODEL
 SUSPICIOUS_KINDS = {'suspicious', 'variation'}
 
 
-def metrics(rows):
+def metrics(rows, expected_repeats=None):
     def ratio(n, d):
         return round(n / d, 4) if d else None
 
@@ -44,8 +45,11 @@ def metrics(rows):
     for r in rows:
         if r.get('id') is not None:
             repetitions[r['id']].append(r)
-    candidates = [g for g in repetitions.values()
-                  if len({r.get('repeat', 1) for r in g}) >= 2]
+    expected_rounds = set(range(1, expected_repeats + 1)) if expected_repeats is not None else None
+    incomplete = [g for g in repetitions.values() if expected_rounds is not None and
+                  (len(g) != expected_repeats or {r.get('repeat', 1) for r in g} != expected_rounds)]
+    candidates = [g for g in repetitions.values() if g not in incomplete and
+                  len({r.get('repeat', 1) for r in g}) >= 2]
     stable_comparable = [g for g in candidates if all(r in valid for r in g)]
     stable_count = sum(len({risk(r) for r in g}) == 1 for g in stable_comparable)
     repeat_excluded = len(candidates) - len(stable_comparable)
@@ -76,6 +80,7 @@ def metrics(rows):
         'stable_repeat_count': stable_count,
         'repeat_stability_denominator': len(stable_comparable),
         'repeat_groups_excluded_due_to_errors': repeat_excluded,
+        'repeat_groups_excluded_due_to_incomplete_runs': len(incomplete),
         'group_excluded_due_to_errors': sum(len(g) > 1 and not all(r in valid for r in g) for g in groups.values()),
         'average_latency_seconds': round(sum(r['latency_seconds'] for r in rows) / total, 3) if total else None,
         'qualitative_review': 'Revisar manualmente linguagem, justificativas, evidências, recomendações e alucinações.',
@@ -114,6 +119,7 @@ def main():
     except (OSError, subprocess.SubprocessError):
         commit = None  # ZIP não contém .git; não inventar um commit
     run_started = datetime.now(timezone.utc).isoformat()
+    cases_sha256 = hashlib.sha256(args.cases.read_bytes()).hexdigest()
     rows = []
     for repeat in range(args.repeats):
         for case in cases:
@@ -131,7 +137,10 @@ def main():
                       'commit': commit, 'timestamp': datetime.now(timezone.utc).isoformat(),
                       'run_started_at': run_started, 'temperature': 0,
                       'repeats_requested': args.repeats, 'delay_seconds': args.delay,
-                      'cases_file': args.cases.name, 'metrics': metrics(rows), 'rows': rows}
+                      'cases_file': args.cases.name, 'cases_sha256': cases_sha256,
+                      'expected_attempts': len(cases) * args.repeats,
+                      'completed': len(rows) == len(cases) * args.repeats,
+                      'metrics': metrics(rows, expected_repeats=args.repeats), 'rows': rows}
             args.output.parent.mkdir(parents=True, exist_ok=True)
             args.output.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding='utf-8')
             print(case['id'], 'válido' if 'result' in row else 'erro')

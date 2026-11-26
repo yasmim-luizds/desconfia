@@ -10,7 +10,7 @@ Na raiz do projeto, com dependências instaladas:
 ```powershell
 .\.venv\Scripts\python.exe eval/run_eval.py --validate-only
 # Execute as duas linhas abaixo para cada nova rodada.
-$saidaAvaliacao = "eval/results-c2-$(Get-Date -Format 'yyyyMMdd-HHmmss-fff').json"
+$saidaAvaliacao = "eval/results-c3-$(Get-Date -Format 'yyyyMMdd-HHmmss-fff').json"
 .\.venv\Scripts\python.exe eval/run_eval.py --repeats 3 --output $saidaAvaliacao
 ```
 
@@ -30,13 +30,13 @@ nome para a próxima execução; o script não retoma a rodada interrompida.
 ## Preparação e registro pela pessoa responsável pelos testes
 
 Com as alterações locais já salvas em commits, atualize a base e crie uma branch
-de testes (se `testes-c2` já existir, use outro nome):
+de testes (se `c3-testes` já existir, use outro nome):
 
 ```powershell
 git fetch origin
-git switch base-c2
-git pull --ff-only origin base-c2
-git switch -c testes-c2
+git switch main
+git pull --ff-only origin main
+git switch -c c3-testes
 git rev-parse HEAD
 ```
 
@@ -55,7 +55,7 @@ git add -f -- $saidaAvaliacao
 
 Esse comando usa a variável da execução no mesmo terminal. Se reabrir o terminal,
 substitua `$saidaAvaliacao` pelo caminho exato do relatório. Inclua a revisão humana
-e as evidências dos testes funcionais na branch de testes e abra um PR para `base-c2`.
+e as evidências dos testes funcionais na branch de testes e abra um PR para `main`.
 
 ## Definições
 
@@ -88,11 +88,11 @@ prompt dos usados na avaliação final e registre limitações, custo e tokens p
 logs `desconfia.ai`. A rodada real V2 está em `eval/results-v2.json`, com análise em
 `docs/MELHORIAS_IA.md`; novos resultados devem ser registrados separadamente.
 
-## Complemento C3 — Frente 2 (candidato 2.0.1)
+## Complemento C3 — Frente 2 (candidato 2.1.1)
 
 Este complemento descreve **código proposto**, não avaliação final executada. A V2 em
-`results-v2.json` permanece intacta. Confirmar com a equipe o prompt 2.1.0 local
-antes de integrar ou definir versão de publicação.
+`results-v2.json` permanece intacta. O candidato 2.1.1 concilia o diagnóstico da branch com a revisão local 2.1.0.
+As regras explicitam as categorias de documento e isolamento e a separação de instruções adversariais.
 
 - `group_consistency`: grupos de mensagens equivalentes na **mesma repetição**, com
   pelo menos duas mensagens e todas as respostas válidas; numerador de grupos
@@ -100,8 +100,10 @@ antes de integrar ou definir versão de publicação.
   grupos ainda precisa ser revisada qualitativamente.
 - `repeat_stability`: **mesmo `id`** em pelo menos duas rodadas `repeat` distintas;
   numerador de IDs com todas as classificações iguais, denominador de IDs com
-  respostas válidas em todas as rodadas. `repeat_groups_excluded_due_to_errors`
-  contabiliza IDs repetidos excluídos por falhas. Sem repetições, resultado `null`.
+  respostas válidas em todas as rodadas previstas. `repeat_groups_excluded_due_to_errors`
+  contabiliza IDs repetidos excluídos por falhas.
+  `repeat_groups_excluded_due_to_incomplete_runs` registra IDs com rodadas incompletas
+  ou duplicadas. Sem repetições, resultado `null`.
 - `failure_categories`: contagem por código interno (`configuration`, `network`,
   `timeout`, `provider_rate_limit`, `provider_http`, `format`, `evidence`,
   `incomplete` ou `unknown`). Texto de erro voltado ao usuário é separado da
@@ -112,7 +114,8 @@ antes de integrar ou definir versão de publicação.
   e contaminação da justificativa. A rubrica e notas devem ser registradas no
   relatório da Frente 4; não gerar pontuação automática sem evidência.
 - Metadados adicionais: commit (`null` se ZIP sem Git), horário de início,
-  modelo, versão do prompt, temperatura, repetições solicitadas e intervalo.
+  modelo, versão do prompt, temperatura, repetições solicitadas, intervalo, SHA-256
+  do conjunto, tentativas previstas e indicador `completed`.
   `rows` preserva erros por tentativa. A configuração de temperatura está fixa
   em 0 no componente de IA.
 
