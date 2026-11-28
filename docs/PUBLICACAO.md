@@ -1,6 +1,8 @@
-# Execução local na C2 e plano de hospedagem da C3
+# Publicação do Desconfia — C3
 
-Para a demonstração da C2, a aplicação será executada localmente em `http://127.0.0.1:8000`, sem URL pública nesta etapa. O planejamento da C3 prevê configurar uma hospedagem, testar o fluxo publicado e atualizar a documentação com a URL real. O provedor da C3 ainda não está definido. Este guia cobre os testes locais; não representa uma publicação em nuvem.
+O Desconfia possui uma versão integrada publicada em https://desconfia.onrender.com/, conforme o registro de publicação da equipe. A aplicação utiliza hospedagem no Render e PostgreSQL no Neon. A versão publicada informada corresponde ao commit `4b9d160`, após a integração dos Pull Requests #8, #9, #10 e #11.
+
+Este guia reúne orientações de execução local, configuração do ambiente e verificações de publicação. Os procedimentos com Docker Compose apresentados nas seções seguintes referem-se ao ambiente local e não devem ser confundidos com a infraestrutura hospedada no Render e no Neon.
 
 ## 1. Preparar o repositório
 
@@ -74,6 +76,14 @@ docker compose restart web
 Entre novamente e confirme que a conta e os registros de teste continuam no histórico. Para parar os containers preservando os dados, use `docker compose down`. **Não use `docker compose down -v`** quando quiser manter o banco: a opção `-v` remove `postgres_data`.
 
 ## 6. Resultado, evidências e conferência antes da gravação
+
+### Publicação integrada da C3
+
+Conforme o comunicado da equipe, a versão integrada do Desconfia foi publicada em https://desconfia.onrender.com/, utilizando Render para hospedagem e PostgreSQL no Neon. A publicação foi identificada pelo commit `4b9d160`, após a integração dos PRs #8, #9, #10 e #11.
+
+As verificações comunicadas incluem healthcheck HTTP 200, análise de mensagem sintética com resultado de risco alto, registro no histórico e envio de feedback. Também foi informado que os testes de backend, frontend, PostgreSQL e build Docker passaram no GitHub Actions.
+
+Esses resultados são provenientes das verificações da equipe, não de uma execução independente realizada nesta revisão documental. As evidências correspondentes devem permanecer vinculadas ao relatório de validação da publicação e à execução do GitHub Actions.
 
 O registro de 27/10/2026 informa que a imagem foi construída, PostgreSQL 17.11 ficou saudável, 12 verificações da API passaram e os dados sintéticos persistiram após reinícios. A instalação manual no computador da Yasmin usa SQLite quando `DATABASE_URL` não está configurada; ela não deve ser descrita como execução PostgreSQL.
 

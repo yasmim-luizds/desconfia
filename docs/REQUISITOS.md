@@ -9,17 +9,17 @@ Não há alegação de melhoria comprovada de comportamento da comunidade.
 | Cadastro e login | formulários React, `/auth/register`, `/auth/login` | Pytest + Vitest |
 | Logout | limpeza de sessão em memória | Vitest |
 | Envio textual | validação de 1–2000 caracteres e consentimento na interface | Pytest + Vitest |
-| Groq | `backend/app/ai.py`, timeout, erros, JSON Schema | testes HTTP simulados; rodada real V2 em `eval/results-v2.json`, com revisão independente/consenso pendentes |
+| Groq | `backend/app/ai.py`, tratamento de erros, timeout e validação de respostas | C2: testes simulados e rodada V2 em `eval/results-v2.json`; C3: avaliação real da versão 2.2.2 registrada em `docs/AVALIACAO_FINAL_C3.md`, com 5/5 respostas válidas e 4/5 classificações esperadas. A revisão qualitativa foi assistida por Codex. |
 | Risco baixo/médio/alto | enum validado, cartão de resultado | Pytest + Vitest |
 | Sinais e explicação | categorias validadas, citações verificadas, texto simples | testes de formato; qualidade depende da eval |
 | Recomendações | resultado e prompt preventivo | Vitest; revisão humana na eval |
 | Histórico | paginação, autorização por usuário, detalhes | Pytest + Vitest |
 | Feedback | útil/não útil, comentário opcional, uma avaliação por análise | Pytest + Vitest |
 | Minimização | texto/evidências não salvos por padrão, opt-in e exclusão | Pytest |
-| Banco PostgreSQL | driver psycopg, URL configurável, Compose | validação local por Docker/PostgreSQL relatada em `VALIDACAO_PUBLICACAO.md`; instalação manual sem `DATABASE_URL` usa SQLite |
-| Testes | Pytest, Vitest, workflow CI | execução local histórica em `VALIDACAO.md`; checks de CI verdes na branch `testes-c2` conforme `VALIDACAO_PUBLICACAO.md` |
-| Eval | 15 casos sintéticos, métricas e rubrica qualitativa | rodada real V2 registrada; conjunto pequeno, revisão independente e consenso pendentes |
-| Publicação | Dockerfile, Compose e guia | C2: demonstração local, sem URL pública; C3: hospedagem planejada, provedor e URL ainda a definir |
+| Banco PostgreSQL | SQLAlchemy, driver psycopg, `DATABASE_URL`, Docker Compose para execução local e PostgreSQL no Neon na versão publicada | C2: validação local por Docker/PostgreSQL registrada em `VALIDACAO_PUBLICACAO.md`; C3: PostgreSQL no Neon conforme configuração e verificações comunicadas pela equipe. A instalação local sem `DATABASE_URL` utiliza SQLite. |
+| Testes | Pytest, Vitest e GitHub Actions | C2: verificações históricas em `VALIDACAO.md`; C3: validação local da candidata 2.2.2 com 70 testes de backend, 29 de frontend e 1 teste PostgreSQL aprovados, conforme `TESTES_C3.md`. Build frontend concluído com ressalvas documentadas. O teste PostgreSQL utilizou ambiente local descartável e provedor simulado; não comprova isoladamente o banco de produção. |
+| Eval | Conjuntos sintéticos, métricas e rubrica qualitativa da IA | C2: rodada V2 preservada em `eval/results-v2.json`; C3: avaliação da versão 2.2.2 com 5/5 respostas válidas e 4/5 classificações esperadas (80%), registrada em `docs/AVALIACAO_FINAL_C3.md`. Revisão qualitativa assistida por Codex, com 16 critérios adequados e 4 parciais. Amostra pequena, sem comprovação de desempenho em uso real. |
+| Publicação | Dockerfile, configuração de implantação, Render e PostgreSQL no Neon | C2: demonstração local; C3: versão publicada em https://desconfia.onrender.com/, commit `4b9d160`. Healthcheck HTTP 200 e fluxos de análise, histórico e feedback verificados conforme comunicado da equipe. Registro em `VALIDACAO_PUBLICACAO.md`. |
 
 ## Segurança e privacidade
 

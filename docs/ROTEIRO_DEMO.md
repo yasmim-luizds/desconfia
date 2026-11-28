@@ -1,5 +1,20 @@
 # Roteiro de demonstração — Desconfia
 
+## Atualização para a C3 — 28/11/2026
+
+A versão integrada do Desconfia foi publicada em https://desconfia.onrender.com/, conforme comunicado da equipe. A hospedagem utiliza Render e PostgreSQL no Neon. A versão publicada informada corresponde ao commit `4b9d160`, após a integração dos PRs #8, #9, #10 e #11.
+
+Para a apresentação da C3, utilizar preferencialmente a versão publicada, caso esteja disponível no momento da gravação. Confirmar previamente o funcionamento do site e utilizar somente contas e mensagens sintéticas.
+
+Na demonstração, apresentar cadastro ou login, análise de uma mensagem fictícia, classificação de risco, sinais identificados, recomendações preventivas, histórico e feedback. A exclusão de uma análise pode ser demonstrada se o fluxo estiver funcionando.
+
+Informar que a avaliação da IA versão 2.2.2 registrou cinco respostas válidas e quatro classificações correspondentes aos riscos esperados (80%). A revisão qualitativa foi assistida por Codex. Esses resultados não representam garantia de precisão em situações reais.
+
+Conforme comunicado da equipe, foram verificados healthcheck HTTP 200, análise sintética, histórico e feedback na versão publicada. Os testes de backend, frontend, PostgreSQL e build Docker também foram informados como aprovados no GitHub Actions.
+
+As verificações da publicação foram comunicadas pela equipe e não constituem uma nova execução independente realizada nesta atualização documental.
+
+As orientações de execução local apresentadas nas seções seguintes permanecem como registro histórico da C2. As referências posteriores à hospedagem ainda planejada correspondem à situação de outubro de 2026, não ao estado informado para a C3.
 **Duração sugerida:** 5–7 minutos
 **Ambiente:** demonstração local da C2 em `http://127.0.0.1:8000`. A instalação manual sem `DATABASE_URL` usa SQLite; o Compose usa PostgreSQL. Não há URL pública para a C2. O planejamento da C3 prevê configurar hospedagem.
 **Dados:** usar somente contas e mensagens fictícias. Não inserir mensagens recebidas por pessoas, nomes, telefones, códigos, links reais ou credenciais.

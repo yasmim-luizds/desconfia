@@ -5,6 +5,27 @@
 **Branch de trabalho:** `publicacao-documentacao`, proposta no [PR #6](https://github.com/yasmim-luizds/desconfia/pull/6).
 **Base atualizada:** `base-c2`, commit `1702dc6`, que inclui o merge do PR #5.
 
+## Atualização da publicação — C3 (28/11/2026)
+
+Este documento preserva os registros históricos das verificações realizadas em outubro de 2026. As informações abaixo apresentam a atualização comunicada pela equipe para a C3, sem substituir os resultados anteriores.
+
+Conforme o comunicado da equipe, o Desconfia está publicado em https://desconfia.onrender.com/, utilizando o Render para hospedagem e PostgreSQL no Neon.
+
+A versão publicada foi identificada pelo commit `4b9d160`, após a integração dos PRs #8, #9, #10 e #11.
+
+Foram comunicadas as seguintes verificações da versão integrada:
+
+- Publicação concluída no Render.
+- Healthcheck com resposta HTTP 200.
+- Análise de mensagem sintética classificada como risco alto.
+- Registro da análise no histórico.
+- Envio de feedback.
+- Testes de backend, frontend, PostgreSQL e build Docker aprovados no GitHub Actions.
+
+Os resultados acima foram informados pela equipe e não representam uma nova execução independente nesta revisão documental. As evidências devem ser conferidas nos registros da publicação e do GitHub Actions.
+
+As referências posteriores deste documento à hospedagem ainda planejada e aos PRs abertos correspondem à situação histórica de outubro de 2026.
+
 ## Escopo da execução local e da hospedagem
 
 A demonstração local escolhida para a C2 não é uma publicação na nuvem. Na instalação manual, quando `DATABASE_URL` não está definida, o back-end usa SQLite em `backend/desconfia_local.db`. Essa é a configuração informada para a aplicação no computador da Yasmin.
