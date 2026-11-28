@@ -29,3 +29,10 @@ it('orienta a aguardar quando há excesso de solicitações', async () => {
   vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: false, status: 429, json: async () => ({}) }));
   await expect(request('/test')).rejects.toThrow('Aguarde um instante');
 });
+it('informa indisponibilidade nos erros 503 e 504 do servidor', async () => {
+  vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: false, status: 503, json: async () => { throw new Error('503'); } }));
+  await expect(request('/test')).rejects.toThrow('O serviço está indisponível');
+
+  vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: false, status: 504, json: async () => { throw new Error('504'); } }));
+  await expect(request('/test')).rejects.toThrow('O serviço está indisponível');
+});
