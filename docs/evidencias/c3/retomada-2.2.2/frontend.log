@@ -1,0 +1,30 @@
+
+ RUN  v3.2.7 <WORKSPACE>/tmp/retomada-c3-candidata/frontend
+
+ ✓ src/App.test.jsx (16 tests) 15909ms
+   ✓ Fluxos do Desconfia > impede cadastro quando as senhas são diferentes  1156ms
+   ✓ Fluxos do Desconfia > analisa, mostra resultado, envia feedback e faz logout  1358ms
+   ✓ Fluxos do Desconfia > mostra carregamento e erro sem inventar resultado  895ms
+   ✓ Fluxos do Desconfia > carrega histórico e exige confirmação para excluir  842ms
+   ✓ Fluxos do Desconfia > preserva o texto digitado quando a análise falha com erro 429  1401ms
+   ✓ Fluxos do Desconfia > preserva o texto digitado quando a análise falha com erro 503  1410ms
+   ✓ Fluxos do Desconfia > preserva o texto digitado quando a análise falha com erro 504  1405ms
+   ✓ Fluxos do Desconfia > encerra a sessão ao receber erro 401 durante uma ação autenticada  1080ms
+   ✓ Fluxos do Desconfia > mantém o registro no histórico quando a exclusão é cancelada  886ms
+   ✓ Fluxos do Desconfia > abre o resultado mesmo se o carregamento do feedback falhar  689ms
+   ✓ Fluxos do Desconfia > encerra a sessão quando a consulta de feedback retorna 401  768ms
+   ✓ Fluxos do Desconfia > permite tentar carregar o feedback novamente após uma falha temporária  868ms
+   ✓ Fluxos do Desconfia > recupera o feedback salvo depois de um conflito sem repetir o envio  1010ms
+   ✓ Fluxos do Desconfia > trata erro 401 ao consultar o feedback após conflito  934ms
+   ✓ Fluxos do Desconfia > trata erro 503 ao consultar o feedback após conflito  1029ms
+ ✓ src/validacao.test.jsx (5 tests) 3156ms
+   ✓ Validação dos campos de acesso > exige senha com pelo menos 8 caracteres no cadastro  1022ms
+   ✓ mostra o erro de senhas diferentes abaixo do campo de confirmação  1078ms
+   ✓ mostra o erro de login junto ao botão, e não no topo da página  646ms
+ ✓ src/api.test.js (8 tests) 13ms
+
+ Test Files  3 passed (3)
+      Tests  29 passed (29)
+   Start at  22:19:58
+   Duration  46.04s (transform 1.67s, setup 7.87s, collect 3.70s, tests 19.08s, environment 13.79s, prepare 711ms)
+

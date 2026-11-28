@@ -1,0 +1,184 @@
+{
+  "date": "2026-11-26",
+  "status": "candidate_tested_locally_not_final_acceptance",
+  "sources": {
+    "backend": "686af0c78f0e9bcad88d725f7a509c6330e9f26d",
+    "frontend": "4c7ebd98b00533e109dc35a3ed38b3d5f935f529",
+    "merged_backend_frontend_tree": "25f39fc7c6c29c26911d313c3bd430f03d0d5e85",
+    "ia_local_commit": "6dcf529747135efab4f5d88c3521f5298ae3265e",
+    "ia_published_code_commit": "ef1469641956065f6af6f671927351e8ecd0393c",
+    "ia_published_code_tree": "3b236a36702dfd7890440ae3e95a097c87f561f2"
+  },
+  "assembly": "Git merge-tree of backend and interface, then exact copies of IA app/ai.py, tests/test_ai.py, tests/test_eval.py and eval/run_eval.py. No main merge or production deployment.",
+  "environment": {
+    "python": "3.12.14",
+    "postgres": "17.12 disposable local cluster",
+    "frontend": "Vite 7.3.6 / Vitest 3.2.7; installed dependencies reused through temporary aliases"
+  },
+  "checks": [
+    {
+      "name": "backend",
+      "command": "python -m pytest -q -p no:cacheprovider",
+      "cwd": "backend",
+      "exit_code": 0,
+      "passed": 60,
+      "skipped": 1,
+      "skip_reason": "TEST_POSTGRES_URL not configured in default run; separate real PostgreSQL test below",
+      "log": "backend.log",
+      "provider": "mocks"
+    },
+    {
+      "name": "postgres",
+      "command": "python -m pytest -q tests/test_postgres.py -p no:cacheprovider --tb=short",
+      "cwd": "backend",
+      "exit_code": 0,
+      "passed": 1,
+      "log": "postgres.log",
+      "scope": "Fresh database, adoption of legacy schema/data, repeated upgrades, Alembic check, API persistence and shared quotas; disposable local PostgreSQL, no Neon data changed"
+    },
+    {
+      "name": "frontend",
+      "command": "vitest run --config <temporary-alias-config> --configLoader native --maxWorkers 1 --minWorkers 1",
+      "cwd": "frontend",
+      "exit_code": 0,
+      "passed": 29,
+      "log": "frontend.log",
+      "provider": "mocks/jsdom, not browser E2E"
+    },
+    {
+      "name": "build",
+      "command": "vite build --config <temporary-alias-config> --configLoader native",
+      "cwd": "frontend",
+      "exit_code": 0,
+      "log": "build.log",
+      "limitation": "CJS aliases increase local bundle to 757.19kB; normal branch CI build is 246.64kB. Local log warning preserved."
+    },
+    {
+      "name": "cases",
+      "command": "python eval/run_eval.py --validate-only",
+      "exit_code": 0,
+      "valid_cases": 15,
+      "provider_calls": 0,
+      "log": "cases.log"
+    }
+  ],
+  "github_checks": [
+    {
+      "commit": "686af0c78f0e9bcad88d725f7a509c6330e9f26d",
+      "url": "https://github.com/yasmim-luizds/desconfia/actions/runs/45901260335",
+      "conclusion": "success",
+      "jobs": [
+        "backend",
+        "frontend",
+        "postgres",
+        "image"
+      ]
+    },
+    {
+      "commit": "4c7ebd98b00533e109dc35a3ed38b3d5f935f529",
+      "url": "https://github.com/yasmim-luizds/desconfia/actions/runs/45901341188",
+      "conclusion": "success",
+      "jobs": [
+        "backend",
+        "frontend"
+      ],
+      "frontend_passed": 29,
+      "normal_bundle_kb": 246.64
+    }
+  ],
+  "groq": {
+    "attempts": 21,
+    "valid_responses": 15,
+    "network_errors": 6,
+    "correct_risk_among_valid": 15,
+    "rounds": [
+      {
+        "prompt": "2.1.1",
+        "attempts": 7,
+        "valid": 1,
+        "delay_seconds": 6
+      },
+      {
+        "prompt": "2.1.1",
+        "attempts": 7,
+        "valid": 7,
+        "delay_seconds": 6
+      },
+      {
+        "prompt": "2.1.2",
+        "attempts": 7,
+        "valid": 7,
+        "delay_seconds": 10
+      }
+    ],
+    "evidence_branch": "c3-ia-avaliacao",
+    "report": "docs/TRIAGEM_IA_C3.md",
+    "limitation": "Development cases used to tune prompt, mixed versions and repeated messages. Risk classification is not qualitative acceptance. First-round errors preserved. Daily account quota balance not verified."
+  },
+  "review": {
+    "type": "assistant_technical_review",
+    "independent_human_reviews": 0,
+    "final_holdout_evaluation": "not_run"
+  },
+  "pending": [
+    "IA: support recommendation reinforced isolation; adversarial instruction still treated as victim request; family explanation/channel needs review",
+    "Two independent human qualitative reviews and consensus",
+    "Reserve and evaluate final independent cases",
+    "Native screen reader test",
+    "Group decision on privacy contact, retention and account deletion procedure",
+    "Documentation deliverables by their owner",
+    "Reviewed merges, integrated deployment and final public end-to-end test"
+  ],
+  "historical_report": "validacao-do-desconfia.docx preserved as prior validation; these fresh logs supplement it and do not replace missing original attachments or claim final acceptance",
+  "setup_notes": [
+    "An initial PostgreSQL invocation used a different database name and was correctly refused by the test safety guard. A fresh cluster initialization was still running at a subsequent attempt. The successful final run used the existing disposable local cluster with a reset desconfia_test database."
+  ],
+  "snapshot_sha256": {
+    "Dockerfile": "74103d2dc98125a648139611c6dd0df223396bcaaef1edaa7cc95bf883bd8776",
+    "backend/alembic.ini": "c22757d5baecac34b065173c63952d1c5a73783cc8df31165ad44a846d9f37ca",
+    "backend/app/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "backend/app/adopt_baseline.py": "53bd4cbc41c6213dada108d22325abfc510066099671dc90dda8179d72a84df3",
+    "backend/app/ai.py": "782b71ee375acaecfc8aa26b106b8e4608c8cbb22504aa5a92660b2c8433e214",
+    "backend/app/config.py": "fbae6b8df6d0c3c505caaaeb78d9a70231098000da94cca797f83dd87cc22d86",
+    "backend/app/database.py": "98eecb72ad14f566a306827d35751c7d59a7929cffd946ac93ccd0e806087f9a",
+    "backend/app/limits.py": "ee2d15f5155362681afd54f426e05fdde9b11b8bed8640d9bf36db195c7f7486",
+    "backend/app/main.py": "26b9036d0cf1c5f1109b04e01c4cf3ffbf8f3fdacb14f8e5b36ef49222419857",
+    "backend/app/models.py": "0963d3a7b3612421d7ea400a81fef71dc0689e5d18a8bdd2b0afc975ea1e1e8e",
+    "backend/app/quota.py": "d4d9612535a70bc7870a213da7c0941549ade0bc1f429562783432ed32491c57",
+    "backend/app/schema.py": "142bb1b6cc3a75b457754fa923dfefc99efe4c2d43fe751ff5225fdba7c4cbc6",
+    "backend/app/schemas.py": "c059d31591bd2b8433c0bdc9dc2a6a15d5ea5241273503f8e7953f90a4cdccc6",
+    "backend/app/security.py": "af731346ff9d26c6dfca2984a93c9674b7dfabc449e6e203cdda422207be498f",
+    "backend/migrations/env.py": "ab2768d0768c4d67e27ec88384a00e3cad9720ea58ff2b501c7561f0f2d49ca1",
+    "backend/migrations/script.py.mako": "4954691fa970146428c7b717f576d699b3ea5f6d90718371cba350648b862c6a",
+    "backend/migrations/versions/0001_baseline.py": "cf5b98768feb2de3e095314bba845354189ca3099ec8774ff96937d037aa60a2",
+    "backend/migrations/versions/0002_quota_trace.py": "e24553b0bb2fbfe0a5d080315e7b11598ad757c5f92aeb9fd6c35b3142a2f1ce",
+    "backend/requirements-lock.txt": "b2af1230f79229b1c765c7c15179aa5a13ec68dd6ac5f7104d1383780d06e032",
+    "backend/requirements.txt": "7e624d407b91d814820e0522e1b0fa81cf49b664a6b5d27eb51a6ed248cad95b",
+    "backend/scripts/seed.py": "2c4fb2582750caeebb185061aaca743405d0f7666daf769d5a3c5ef0dbed9b0d",
+    "backend/tests/conftest.py": "b1944bbd4a0aa3947316379a59d456c03c7faa71cb7726c136ba9fb4df9f183f",
+    "backend/tests/test_ai.py": "8e66d5e6999f1a8f511ef097fe7b8f37b14159bf758a9c14fc84c15bb93d7dd1",
+    "backend/tests/test_api.py": "28eb9d9f6cd3a786dc34c322b8c1da1a75f76efb3473e0b967b4197a50785eb6",
+    "backend/tests/test_eval.py": "65c54cbd124ce3665793730d3ad5df30b834c963a77154750a6df998c8b13e0f",
+    "backend/tests/test_migrations.py": "c8de52f6b76bdec769124d1b382741404e82602a388c292ecb22190622d3ea5e",
+    "backend/tests/test_postgres.py": "c5d434114cff530320725d4b6d300756ac27933d90ddaadcbe72618f23f37c94",
+    "backend/tests/test_production.py": "012c2ea13fd1e1937d2eada298324182894d1dfd58b013c7a8d2f51870916b63",
+    "eval/run_eval.py": "a2dc47c4cf80e902eb827adf28ffc965123ca9ef13de130db6b32fd1b9b79c25",
+    "frontend/package.json": "7b0e2b97b13018f03cc254d834cc8060c86d1f26a72897cffcc10d30d866a1d6",
+    "frontend/pnpm-lock.yaml": "0c0876060f12150e08490995cb9bca7609ec3e9a42415f68a90dc0176632d321",
+    "frontend/src/App.jsx": "eb35566ed33bb2d442fe6489f66bb683852e31a256043b124419a103bd18c25e",
+    "frontend/src/App.test.jsx": "37d3d8b085e268d3d95615df227271c435430318e22ff7d884487d0112c9839e",
+    "frontend/src/api.js": "1565ee3165bc66f665022b733b1cf4491dbe92ad744db8ad50ae44f7a97ae833",
+    "frontend/src/api.test.js": "dff49ea5c851791f8b7b0be373f424c06bb791761f144378c169eb0df83029b6",
+    "frontend/src/main.jsx": "bb3e83bcb30053934348e4359d4ec2e01055fb60d5e1bc6c88156ebd6354896c",
+    "frontend/src/styles.css": "ef5e6c9ea205253d1f557bac891bb37a8c494d2a07a5777c594e78051ba8112a",
+    "frontend/src/test-setup.js": "55568b847a3481ef964e87637495a964108aa1c34c1eb248492d0a2d9b065812",
+    "frontend/src/validacao.test.jsx": "e297e8880137696f1c232f55949ce4b6a4296faf672b5abea147dccb60237dee"
+  },
+  "evidence_sha256": {
+    "backend.log": "b9e99567a82ffc5036b3fa1a922b01c2b5d34cdaba683bddd0fc00b569359d1e",
+    "build.log": "3bc15d7f7db9aafde3b91b244c0636da3c02901d07f571cc0d599b58b456ba64",
+    "cases.log": "7431760700fc85df8f7b2775d2d9bc011e69f6cae3cefec42b0d3645b302f092",
+    "frontend.log": "ea524825d4e203b41ef95af576079b7a8288af5217527a5f25db47a8f9d1dbb8",
+    "postgres.log": "aa014bb2ba0b23a7538fc1e7feb0346998a3f3ee7391248a807bf76abd851a92"
+  }
+}
