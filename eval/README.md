@@ -88,11 +88,9 @@ prompt dos usados na avaliação final e registre limitações, custo e tokens p
 logs `desconfia.ai`. A rodada real V2 está em `eval/results-v2.json`, com análise em
 `docs/MELHORIAS_IA.md`; novos resultados devem ser registrados separadamente.
 
-## Complemento C3 — Frente 2 (candidato 2.1.2)
+## Complemento C3 — histórico da candidata 2.1.2
 
-Este complemento descreve **código proposto**, não avaliação final executada. A V2 em
-`results-v2.json` permanece intacta. O candidato 2.1.2 concilia o diagnóstico da branch com a revisão local 2.1.0.
-A 2.1.2 reforça essas regras, mas os retestes ainda encontraram isolamento na recomendação e contaminação adversarial. Consulte os resultados e as pendências em [TRIAGEM_IA_C3.md](../docs/TRIAGEM_IA_C3.md); não considerar aprovação final.
+A versão 2.1.2 conciliou o diagnóstico da branch com a revisão local 2.1.0. Seus retestes registraram isolamento na recomendação e contaminação adversarial. Os resultados históricos estão em [TRIAGEM_IA_C3.md](../docs/TRIAGEM_IA_C3.md). A V2 em `results-v2.json` permanece intacta.
 
 - `group_consistency`: grupos de mensagens equivalentes na **mesma repetição**, com
   pelo menos duas mensagens e todas as respostas válidas; numerador de grupos
@@ -136,3 +134,13 @@ python eval/run_eval.py --validate-only
 **Não execute** `eval/run_eval.py` sem `--validate-only` por engano: a execução
 real consome quota da Groq. A rodada V2 usa uma tentativa por mensagem, portanto
 não possui evidência para taxa de estabilidade entre repetições.
+
+## Candidata atual 2.2.2
+
+A Groq gera risco, explicação e sinais; a aplicação acrescenta a recomendação preventiva controlada. Citações são selecionadas entre trechos literais da própria entrada e também verificadas localmente. Essa restrição não garante a relevância da citação nem a fidelidade de toda a explicação.
+
+Acrescente `--stop-on-rate-limit` a uma rodada com quantidade previamente definida. O erro é salvo com `stopped_reason=provider_rate_limit` e não há retentativa automática. Arquivos existentes continuam protegidos contra sobrescrita.
+
+Os relatórios incluem `source_dirty`, `source_sha256`, `source_hash_method=utf8_text_lf` e `recommendation_source=application_policy`. Uma cópia integrada sem Git registra commit nulo e identifica as fontes por hashes. O commit de base e o estado das fontes descrevem a execução original.
+
+Para os indicadores previstos, consistência compara mensagens equivalentes com mesmo grupo/repetição. Estabilidade compara o mesmo ID em repetições distintas e não pode ser inferida de uma rodada única. Denominadores vazios são não aplicáveis. A reavaliação atual está na branch de validação, em `docs/AVALIACAO_FINAL_C3.md`, com dados brutos e notas assistidas. Reutilização de casos e divergência da mensagem ambígua são declaradas; não generalizar os percentuais de uma amostra pequena.

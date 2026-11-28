@@ -1,4 +1,5 @@
 import importlib.util
+import json
 from pathlib import Path
 
 import pytest
@@ -114,3 +115,30 @@ def test_repeat_stability_excludes_interrupted_and_duplicate_rounds():
     assert module.metrics(complete, expected_repeats=3)['repeat_stability'] == 1
     duplicate = interrupted + [row('legitimate', 'low', 'low', id='a', repeat=2)]
     assert module.metrics(duplicate, expected_repeats=3)['repeat_stability'] is None
+
+
+def test_rate_limit_stops_run_and_preserves_partial_report(monkeypatch, tmp_path):
+    cases = tmp_path / 'cases.json'
+    output = tmp_path / 'results.json'
+    cases.write_text(json.dumps([{'id': 'synthetic', 'kind': 'legitimate', 'group': 'unit',
+                                 'message': 'Bom dia', 'expected': 'low'}]), encoding='utf-8')
+    calls = []
+    def limited(message):
+        calls.append(message)
+        raise module.AIError('Limite', 429, 'provider_rate_limit')
+    monkeypatch.setenv('GROQ_API_KEY', 'synthetic-test-key')
+    monkeypatch.setattr(module, 'analyze', limited)
+    monkeypatch.setattr(module.sys, 'argv', ['run_eval.py', '--cases', str(cases), '--output', str(output),
+                                            '--repeats', '3', '--delay', '0', '--stop-on-rate-limit'])
+    with pytest.raises(SystemExit) as stopped:
+        module.main()
+    assert stopped.value.code == 3
+    assert calls == ['Bom dia']
+    report = json.loads(output.read_text(encoding='utf-8'))
+    assert report['completed'] is False
+    assert report['expected_attempts'] == 3
+    assert report['stopped_reason'] == 'provider_rate_limit'
+    assert report['rows'][0]['error_code'] == 'provider_rate_limit'
+    assert report['metrics']['repeat_stability'] is None
+    assert report['source_sha256']['backend/app/ai.py']
+    assert report['source_hash_method'] == 'utf8_text_lf'

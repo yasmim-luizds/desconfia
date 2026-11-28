@@ -88,12 +88,30 @@ def metrics(rows, expected_repeats=None):
     }
 
 
+def source_metadata():
+    paths = ['backend/app/ai.py', 'backend/app/config.py', 'backend/app/models.py', 'eval/run_eval.py']
+    hashes = {path: hashlib.sha256((ROOT / path).read_text(encoding='utf-8').encode('utf-8')).hexdigest()
+              for path in paths}
+    try:
+        commit = subprocess.run(['git', 'rev-parse', 'HEAD'], cwd=ROOT,
+                                capture_output=True, text=True, timeout=3, check=True).stdout.strip()
+        changed = subprocess.run(['git', 'diff', '--quiet', 'HEAD', '--', *paths], cwd=ROOT,
+                                 capture_output=True, timeout=3)
+        dirty = changed.returncode != 0 if changed.returncode in (0, 1) else None
+    except (OSError, subprocess.SubprocessError):
+        commit, dirty = None, None
+    return {'commit': commit, 'source_dirty': dirty, 'source_sha256': hashes,
+            'source_hash_method': 'utf8_text_lf'}
+
+
 def main():
     logging.basicConfig(level=logging.INFO)
     parser = argparse.ArgumentParser()
     parser.add_argument('--validate-only', action='store_true')
     parser.add_argument('--repeats', type=int, default=1)
     parser.add_argument('--delay', type=float, default=6)
+    parser.add_argument('--stop-on-rate-limit', action='store_true',
+                        help='Preserva a tentativa e interrompe a rodada ao receber limite do provedor.')
     parser.add_argument('--cases', type=Path, default=ROOT / 'eval' / 'cases.json')
     parser.add_argument('--output', type=Path, default=ROOT / 'eval' / 'results-v2.json')
     args = parser.parse_args()
@@ -113,11 +131,7 @@ def main():
         parser.error('O arquivo de saída já existe. Escolha outro caminho para preservar avaliações anteriores.')
     if not os.getenv('GROQ_API_KEY'):
         parser.error('Configure GROQ_API_KEY em backend/.env antes da avaliação real.')
-    try:
-        commit = subprocess.run(['git', 'rev-parse', 'HEAD'], cwd=ROOT,
-                                capture_output=True, text=True, timeout=3, check=True).stdout.strip()
-    except (OSError, subprocess.SubprocessError):
-        commit = None  # ZIP não contém .git; não inventar um commit
+    provenance = source_metadata()
     run_started = datetime.now(timezone.utc).isoformat()
     cases_sha256 = hashlib.sha256(args.cases.read_bytes()).hexdigest()
     rows = []
@@ -133,17 +147,23 @@ def main():
                 row['error_status'] = error.status_code
             row['latency_seconds'] = round(time.monotonic() - started, 3)
             rows.append(row)
+            stop = args.stop_on_rate_limit and row.get('error_code') == 'provider_rate_limit'
             report = {'model': GROQ_MODEL, 'prompt_version': PROMPT_VERSION,
-                      'commit': commit, 'timestamp': datetime.now(timezone.utc).isoformat(),
+                      **provenance, 'timestamp': datetime.now(timezone.utc).isoformat(),
+                      'recommendation_source': 'application_policy',
                       'run_started_at': run_started, 'temperature': 0,
                       'repeats_requested': args.repeats, 'delay_seconds': args.delay,
                       'cases_file': args.cases.name, 'cases_sha256': cases_sha256,
                       'expected_attempts': len(cases) * args.repeats,
                       'completed': len(rows) == len(cases) * args.repeats,
+                      'stopped_reason': 'provider_rate_limit' if stop else None,
                       'metrics': metrics(rows, expected_repeats=args.repeats), 'rows': rows}
             args.output.parent.mkdir(parents=True, exist_ok=True)
             args.output.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding='utf-8')
             print(case['id'], 'válido' if 'result' in row else 'erro')
+            if stop:
+                print('Rodada interrompida pelo limite do provedor. Tentativa preservada; sem retentativa automática.')
+                raise SystemExit(3)
             if args.delay:
                 time.sleep(args.delay)
     print(json.dumps(report['metrics'], ensure_ascii=False, indent=2))
