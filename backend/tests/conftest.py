@@ -12,13 +12,15 @@ from sqlalchemy.pool import StaticPool
 
 from app.database import Base, get_db
 from app.main import app
+from app import main
 from app.limits import _entries
 
 
 @pytest.fixture
-def client():
+def client(monkeypatch):
     engine = create_engine('sqlite://', connect_args={'check_same_thread': False}, poolclass=StaticPool)
     Base.metadata.create_all(engine)
+    monkeypatch.setattr(main, 'engine', engine)
     def override_db():
         with Session(engine) as session:
             yield session

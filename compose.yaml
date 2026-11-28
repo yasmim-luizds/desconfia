@@ -22,6 +22,9 @@ services:
       GROQ_API_KEY: ${GROQ_API_KEY:-}
       GROQ_MODEL: ${GROQ_MODEL:-openai/gpt-oss-20b}
       APP_ENV: development
+      RUN_MIGRATIONS: 'true'
+      AI_GLOBAL_PER_MINUTE: ${AI_GLOBAL_PER_MINUTE:-20}
+      AI_GLOBAL_PER_DAY: ${AI_GLOBAL_PER_DAY:-200}
     depends_on:
       database:
         condition: service_healthy

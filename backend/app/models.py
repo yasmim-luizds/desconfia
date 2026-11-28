@@ -48,6 +48,7 @@ class Analysis(Base):
     recommendation: Mapped[str] = mapped_column(Text, nullable=False)
     ai_provider: Mapped[str] = mapped_column(String(40), default='local-demo', nullable=False)
     ai_model: Mapped[str | None] = mapped_column(String(100), nullable=True)
+    prompt_version: Mapped[str | None] = mapped_column(String(40), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, nullable=False)
     completed_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
     user: Mapped[User] = relationship(back_populates='analyses')
@@ -78,3 +79,10 @@ class Feedback(Base):
     updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
     analysis: Mapped[Analysis] = relationship(back_populates='feedbacks')
     user: Mapped[User] = relationship(back_populates='feedbacks')
+
+
+class AIQuota(Base):
+    __tablename__ = 'ai_quotas'
+    scope: Mapped[str] = mapped_column(String(20), primary_key=True)
+    window_start: Mapped[int] = mapped_column(Integer, primary_key=True)
+    used: Mapped[int] = mapped_column(Integer, nullable=False)
