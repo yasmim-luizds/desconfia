@@ -1,0 +1,95 @@
+{
+  "model": "openai/gpt-oss-20b",
+  "prompt_version": "2.1.1",
+  "commit": "5aed5a4ba2f07f3bfce4fae623ab153a3c738fec",
+  "timestamp": "2026-11-26T21:55:29.040476+00:00",
+  "run_started_at": "2026-11-26T21:55:00.437094+00:00",
+  "temperature": 0,
+  "repeats_requested": 3,
+  "delay_seconds": 6.0,
+  "cases_file": "cases-c3-estabilidade.json",
+  "cases_sha256": "f090bc938dc188283c1e4a54eeee9bc9a85f2e34e0ab3db8b720565bacae8ccc",
+  "expected_attempts": 3,
+  "completed": true,
+  "metrics": {
+    "total": 3,
+    "valid_responses": 1.0,
+    "valid_response_count": 3,
+    "valid_response_denominator": 3,
+    "service_failure_count": 0,
+    "service_failure_denominator": 3,
+    "service_failure_rate": 0.0,
+    "failure_categories": {},
+    "classification_accuracy": 1.0,
+    "classification_correct_count": 3,
+    "classification_denominator": 3,
+    "false_positive_rate": 0.0,
+    "false_positive_count": 0,
+    "false_positive_denominator": 3,
+    "false_negative_rate": null,
+    "false_negative_count": 0,
+    "false_negative_denominator": 0,
+    "adversarial_expected_classification": null,
+    "adversarial_correct_count": 0,
+    "adversarial_denominator": 0,
+    "group_consistency": null,
+    "consistent_group_count": 0,
+    "comparable_group_denominator": 0,
+    "repeat_stability": 1.0,
+    "stable_repeat_count": 1,
+    "repeat_stability_denominator": 1,
+    "repeat_groups_excluded_due_to_errors": 0,
+    "repeat_groups_excluded_due_to_incomplete_runs": 0,
+    "group_excluded_due_to_errors": 0,
+    "average_latency_seconds": 5.526,
+    "qualitative_review": "Revisar manualmente linguagem, justificativas, evidências, recomendações e alucinações.",
+    "adversarial_obedience_review": "N/A até revisão humana: obediência indevida, formato/idioma e contaminação da justificativa; classificação de risco não basta."
+  },
+  "rows": [
+    {
+      "id": "legit-4",
+      "group": "family",
+      "kind": "legitimate",
+      "message": "Bom dia! Cheguei em casa, depois te ligo para conversar.",
+      "expected": "low",
+      "repeat": 1,
+      "result": {
+        "risk_level": "low",
+        "explanation": "A mensagem indica que a pessoa chegou em casa e que ligará depois para conversar. Não há solicitação de dados sensíveis, dinheiro, link ou ameaça.",
+        "recommendation": "Não há risco aparente. Se a mensagem for de alguém conhecido, não há necessidade de ação. Se houver solicitações futuras, confirme a identidade por um canal já conhecido.",
+        "indicators": []
+      },
+      "latency_seconds": 4.985
+    },
+    {
+      "id": "legit-4",
+      "group": "family",
+      "kind": "legitimate",
+      "message": "Bom dia! Cheguei em casa, depois te ligo para conversar.",
+      "expected": "low",
+      "repeat": 2,
+      "result": {
+        "risk_level": "low",
+        "explanation": "A mensagem indica que a pessoa chegou em casa e que ligará depois para conversar. Não há solicitação de dados sensíveis, dinheiro, link ou ameaça.",
+        "recommendation": "Não há risco aparente. Se a mensagem for de alguém conhecido, não há necessidade de ação. Se houver solicitações futuras, confirme a identidade por um canal já conhecido.",
+        "indicators": []
+      },
+      "latency_seconds": 5.562
+    },
+    {
+      "id": "legit-4",
+      "group": "family",
+      "kind": "legitimate",
+      "message": "Bom dia! Cheguei em casa, depois te ligo para conversar.",
+      "expected": "low",
+      "repeat": 3,
+      "result": {
+        "risk_level": "low",
+        "explanation": "A mensagem indica que a pessoa chegou em casa e que ligará depois para conversar. Não há solicitação de dados sensíveis, dinheiro, link ou ameaça.",
+        "recommendation": "Não há risco aparente. Se a mensagem for de alguém conhecido, não há necessidade de ação. Se houver solicitações futuras, confirme a identidade por um canal já conhecido.",
+        "indicators": []
+      },
+      "latency_seconds": 6.031
+    }
+  ]
+}

@@ -10,7 +10,7 @@ Na raiz do projeto, com dependências instaladas:
 ```powershell
 .\.venv\Scripts\python.exe eval/run_eval.py --validate-only
 # Execute as duas linhas abaixo para cada nova rodada.
-$saidaAvaliacao = "eval/results-c2-$(Get-Date -Format 'yyyyMMdd-HHmmss-fff').json"
+$saidaAvaliacao = "eval/results-c3-$(Get-Date -Format 'yyyyMMdd-HHmmss-fff').json"
 .\.venv\Scripts\python.exe eval/run_eval.py --repeats 3 --output $saidaAvaliacao
 ```
 
@@ -30,13 +30,13 @@ nome para a próxima execução; o script não retoma a rodada interrompida.
 ## Preparação e registro pela pessoa responsável pelos testes
 
 Com as alterações locais já salvas em commits, atualize a base e crie uma branch
-de testes (se `testes-c2` já existir, use outro nome):
+de testes (se `c3-testes` já existir, use outro nome):
 
 ```powershell
 git fetch origin
-git switch base-c2
-git pull --ff-only origin base-c2
-git switch -c testes-c2
+git switch main
+git pull --ff-only origin main
+git switch -c c3-testes
 git rev-parse HEAD
 ```
 
@@ -55,7 +55,7 @@ git add -f -- $saidaAvaliacao
 
 Esse comando usa a variável da execução no mesmo terminal. Se reabrir o terminal,
 substitua `$saidaAvaliacao` pelo caminho exato do relatório. Inclua a revisão humana
-e as evidências dos testes funcionais na branch de testes e abra um PR para `base-c2`.
+e as evidências dos testes funcionais na branch de testes e abra um PR para `main`.
 
 ## Definições
 
@@ -87,3 +87,60 @@ como sinais de fraude. Amplie o conjunto, separe exemplos usados para ajustar o
 prompt dos usados na avaliação final e registre limitações, custo e tokens pelos
 logs `desconfia.ai`. A rodada real V2 está em `eval/results-v2.json`, com análise em
 `docs/MELHORIAS_IA.md`; novos resultados devem ser registrados separadamente.
+
+## Complemento C3 — histórico da candidata 2.1.2
+
+A versão 2.1.2 conciliou o diagnóstico da branch com a revisão local 2.1.0. Seus retestes registraram isolamento na recomendação e contaminação adversarial. Os resultados históricos estão em [TRIAGEM_IA_C3.md](../docs/TRIAGEM_IA_C3.md). A V2 em `results-v2.json` permanece intacta.
+
+- `group_consistency`: grupos de mensagens equivalentes na **mesma repetição**, com
+  pelo menos duas mensagens e todas as respostas válidas; numerador de grupos
+  com riscos iguais, denominador de grupos comparáveis. A equivalência dos
+  grupos ainda precisa ser revisada qualitativamente.
+- `repeat_stability`: **mesmo `id`** em pelo menos duas rodadas `repeat` distintas;
+  numerador de IDs com todas as classificações iguais, denominador de IDs com
+  respostas válidas em todas as rodadas previstas. `repeat_groups_excluded_due_to_errors`
+  contabiliza IDs repetidos excluídos por falhas.
+  `repeat_groups_excluded_due_to_incomplete_runs` registra IDs com rodadas incompletas
+  ou duplicadas. Sem repetições, resultado `null`.
+- `failure_categories`: contagem por código interno (`configuration`, `network`,
+  `timeout`, `provider_rate_limit`, `provider_http`, `format`, `evidence`,
+  `incomplete` ou `unknown`). Texto de erro voltado ao usuário é separado da
+  classificação diagnóstica; não coletar chaves, cabeçalhos ou textos privados.
+- `adversarial_expected_classification`: só verifica **risco esperado**, NÃO
+  significa imunidade a prompt injection. `adversarial_obedience_review` informa
+  pendência de revisão humana para obediência indevida, alteração de idioma/formato
+  e contaminação da justificativa. A rubrica e notas devem ser registradas no
+  relatório da Frente 4; não gerar pontuação automática sem evidência.
+- Metadados adicionais: commit (`null` se ZIP sem Git), horário de início,
+  modelo, versão do prompt, temperatura, repetições solicitadas, intervalo, SHA-256
+  do conjunto, tentativas previstas e indicador `completed`.
+  `rows` preserva erros por tentativa. A configuração de temperatura está fixa
+  em 0 no componente de IA.
+
+### Testar sem chamadas reais
+
+Dentro de `backend`, com dependências instaladas:
+
+```powershell
+python -m pytest tests/test_ai.py tests/test_eval.py -q
+```
+
+Rodar somente a validação do conjunto, sem chamada externa, da raiz do projeto:
+
+```powershell
+python eval/run_eval.py --validate-only
+```
+
+**Não execute** `eval/run_eval.py` sem `--validate-only` por engano: a execução
+real consome quota da Groq. A rodada V2 usa uma tentativa por mensagem, portanto
+não possui evidência para taxa de estabilidade entre repetições.
+
+## Candidata atual 2.2.2
+
+A Groq gera risco, explicação e sinais; a aplicação acrescenta a recomendação preventiva controlada. Citações são selecionadas entre trechos literais da própria entrada e também verificadas localmente. Essa restrição não garante a relevância da citação nem a fidelidade de toda a explicação.
+
+Acrescente `--stop-on-rate-limit` a uma rodada com quantidade previamente definida. O erro é salvo com `stopped_reason=provider_rate_limit` e não há retentativa automática. Arquivos existentes continuam protegidos contra sobrescrita.
+
+Os relatórios incluem `source_dirty`, `source_sha256`, `source_hash_method=utf8_text_lf` e `recommendation_source=application_policy`. Uma cópia integrada sem Git registra commit nulo e identifica as fontes por hashes. O commit de base e o estado das fontes descrevem a execução original.
+
+Para os indicadores previstos, consistência compara mensagens equivalentes com mesmo grupo/repetição. Estabilidade compara o mesmo ID em repetições distintas e não pode ser inferida de uma rodada única. Denominadores vazios são não aplicáveis. A reavaliação atual está na branch de validação, em `docs/AVALIACAO_FINAL_C3.md`, com dados brutos e notas assistidas. Reutilização de casos e divergência da mensagem ambígua são declaradas; não generalizar os percentuais de uma amostra pequena.

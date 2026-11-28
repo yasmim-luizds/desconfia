@@ -1,0 +1,9 @@
+[
+  {
+    "id": "legit-4",
+    "group": "family",
+    "kind": "legitimate",
+    "message": "Bom dia! Cheguei em casa, depois te ligo para conversar.",
+    "expected": "low"
+  }
+]

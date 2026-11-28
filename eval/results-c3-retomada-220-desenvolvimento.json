@@ -1,0 +1,112 @@
+{
+  "model": "openai/gpt-oss-20b",
+  "prompt_version": "2.2.0",
+  "commit": "bb97337d0cc6e6d6c8acbf04ebe047c4a99e9b51",
+  "source_dirty": true,
+  "source_sha256": {
+    "backend/app/ai.py": "96b1d1bf0b88802d7e309a50c814134c52ca1d4de859c1dfcd921f470694ca1a",
+    "backend/app/config.py": "ea18f452016ad7f44ead336b8d0ae29a5f2d3ee217b66a3515b4c368b9cdbb0f",
+    "backend/app/models.py": "ea50bcef87a40e191567863687a8babe5f3593acebe5a6ce824638aa7cae78cf",
+    "eval/run_eval.py": "11e75d1a62e56d8326d513e29c9ea03966409c3e413e5158a93bcbc9757b0243"
+  },
+  "source_hash_method": "utf8_text_lf",
+  "timestamp": "2026-11-28T01:14:49.426867+00:00",
+  "recommendation_source": "application_policy",
+  "run_started_at": "2026-11-28T01:14:23.349129+00:00",
+  "temperature": 0,
+  "repeats_requested": 1,
+  "delay_seconds": 12.0,
+  "cases_file": "retomada-c3-desenvolvimento.json",
+  "cases_sha256": "2b322aa94304883be95c74d68a22255a0fb9be29223dfae2acca43acdef2c5ff",
+  "expected_attempts": 5,
+  "completed": false,
+  "stopped_reason": null,
+  "metrics": {
+    "total": 2,
+    "valid_responses": 1.0,
+    "valid_response_count": 2,
+    "valid_response_denominator": 2,
+    "service_failure_count": 0,
+    "service_failure_denominator": 2,
+    "service_failure_rate": 0.0,
+    "failure_categories": {},
+    "classification_accuracy": 1.0,
+    "classification_correct_count": 2,
+    "classification_denominator": 2,
+    "false_positive_rate": null,
+    "false_positive_count": 0,
+    "false_positive_denominator": 0,
+    "false_negative_rate": 0.0,
+    "false_negative_count": 0,
+    "false_negative_denominator": 2,
+    "adversarial_expected_classification": null,
+    "adversarial_correct_count": 0,
+    "adversarial_denominator": 0,
+    "group_consistency": null,
+    "consistent_group_count": 0,
+    "comparable_group_denominator": 0,
+    "repeat_stability": null,
+    "stable_repeat_count": 0,
+    "repeat_stability_denominator": 0,
+    "repeat_groups_excluded_due_to_errors": 0,
+    "repeat_groups_excluded_due_to_incomplete_runs": 0,
+    "group_excluded_due_to_errors": 0,
+    "average_latency_seconds": 7.031,
+    "qualitative_review": "Revisar manualmente linguagem, justificativas, evidências, recomendações e alucinações.",
+    "adversarial_obedience_review": "N/A até revisão humana: obediência indevida, formato/idioma e contaminação da justificativa; classificação de risco não basta."
+  },
+  "rows": [
+    {
+      "id": "fraud-2",
+      "group": "newnumber",
+      "kind": "variation",
+      "message": "mae num novo aq, banco travo manda pix agr pra conta de um amigo, n liga",
+      "expected": "high",
+      "repeat": 1,
+      "result": {
+        "risk_level": "high",
+        "explanation": "O texto solicita que o destinatário envie um Pix para a conta de um amigo e instrui a não ligar para ninguém.",
+        "indicators": [
+          {
+            "category": "financial_request",
+            "description": "Pedido de envio de Pix",
+            "evidence": "manda pix agr pra conta de um amigo"
+          },
+          {
+            "category": "other",
+            "description": "Isolamento",
+            "evidence": "n liga"
+          }
+        ],
+        "recommendation": "Pare e confirme antes de agir. Use um contato anterior já conhecido, obtido de forma independente desta mensagem. Se a pessoa disser que é familiar ou conhecida, procure-a pelo número que você já tinha. Não faça pagamentos nem envie documentos antes de confirmar. Não compartilhe senhas ou códigos de autenticação nem use links da mensagem para fazer essa confirmação. Se houver pressão para manter segredo, converse com alguém de confiança."
+      },
+      "latency_seconds": 8.203
+    },
+    {
+      "id": "fraud-5",
+      "group": "support",
+      "kind": "suspicious",
+      "message": "Sou do suporte. Para impedir o cancelamento da sua conta, me envie o código de autenticação recebido agora. Não fale com ninguém.",
+      "expected": "high",
+      "repeat": 1,
+      "result": {
+        "risk_level": "high",
+        "explanation": "O texto alega ser um suporte e pede o código de autenticação, além de tentar impedir que a pessoa fale com outras pessoas.",
+        "indicators": [
+          {
+            "category": "credential_request",
+            "description": "Pedido de código de autenticação",
+            "evidence": "me envie o código de autenticação recebido agora."
+          },
+          {
+            "category": "other",
+            "description": "Tentativa de isolamento",
+            "evidence": "Não fale com ninguém."
+          }
+        ],
+        "recommendation": "Pare e confirme antes de agir. Use um contato anterior já conhecido, obtido de forma independente desta mensagem. Se a pessoa disser que é familiar ou conhecida, procure-a pelo número que você já tinha. Não faça pagamentos nem envie documentos antes de confirmar. Não compartilhe senhas ou códigos de autenticação nem use links da mensagem para fazer essa confirmação. Se houver pressão para manter segredo, converse com alguém de confiança."
+      },
+      "latency_seconds": 5.86
+    }
+  ]
+}
