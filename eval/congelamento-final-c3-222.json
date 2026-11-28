@@ -1,0 +1,47 @@
+{
+  "frozen_at": "2026-11-28T01:46:36.407515+00:00",
+  "prompt_version": "2.2.2",
+  "model": "openai/gpt-oss-20b",
+  "temperature": 0,
+  "repeats": 1,
+  "delay_seconds": 20,
+  "distinct_cases": 5,
+  "expected_attempts": 5,
+  "cases_file": "cases-final-c3-222.json",
+  "cases_sha256": "50954ff4fd127a6551da2609033e0bd8c39b96655374c745904f15be8226dd5c",
+  "cases_encoding": "UTF-8, LF",
+  "source_hash_method": "utf8_text_lf",
+  "source_sha256": {
+    "backend/app/ai.py": "12ad7717eb574841c2ca2c6dc9af5853dafafb2dcaf77327c670d4179832b7fb",
+    "backend/app/config.py": "8bd25eb282682e0ceeff3a1780ce01dc410d3db6947de4f8df66ff595dfc9a9d",
+    "backend/app/models.py": "1567d1698987219b82cff26b12e4c1d01a4ba6ecc256125035aae1d616df61f8",
+    "eval/run_eval.py": "11e75d1a62e56d8326d513e29c9ea03966409c3e413e5158a93bcbc9757b0243"
+  },
+  "integrated_sources": {
+    "created_at": "2026-11-28T01:46:18.669866+00:00",
+    "backend_commit": "686af0c78f0e9bcad88d725f7a509c6330e9f26d",
+    "frontend_commit": "5e55282653962f55a452189ca093d05f654dd269",
+    "ia_published_base_commit": "bdfe6aa053f86c7f6448185f12bc7657afbac3a9",
+    "ia_source_uncommitted": true,
+    "merged_backend_frontend_tree": "5fcf4820f711a5675899dfb23818b2c860276e97",
+    "overlay_sha256": {
+      "backend/app/ai.py": "12ad7717eb574841c2ca2c6dc9af5853dafafb2dcaf77327c670d4179832b7fb",
+      "backend/tests/test_ai.py": "e2be75706c50336e68ebdd2e1ba4fb633197db8c9bd238f1360c00adf58e1160",
+      "backend/tests/test_eval.py": "58c494f8c14be6d406bdae36e6633f041d741da3fa07025ffb8b385f5c5ec5d6",
+      "eval/run_eval.py": "11e75d1a62e56d8326d513e29c9ea03966409c3e413e5158a93bcbc9757b0243",
+      "eval/cases-c3-regressao.json": "5524892178f4884ba9967e35862d774be6bc6043d530f9ccde786d969459638a",
+      "eval/cases-c3-estabilidade.json": "88232af88855b20861ccadf6c5a8a6228c6b2870af187e0d2779a4fb866d7aa6"
+    }
+  },
+  "new_commit_pending_user_approval": true,
+  "method": "Reevaluation of previously observed inputs with one predefined linguistic variation. Not an independent holdout or blind human study. Original risk labels preserved.",
+  "selection_reason": "Keep legitimate, ambiguous, adversarial and the formerly failing financial case plus its equivalent variation; avoid repeating a second financial scenario after spending one call on HTTP rejection. No failing result was deleted or relabeled.",
+  "robustness": "Compare fraud-7 and fraud-7-variacao within one round; repeat stability is not measured.",
+  "budget": {
+    "phase_maximum": 8,
+    "http_rejection_221": 1,
+    "successful_regression_222": 1,
+    "evaluation": 5,
+    "reserved_published_flow": 1
+  }
+}

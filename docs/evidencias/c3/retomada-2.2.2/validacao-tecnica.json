@@ -1,0 +1,114 @@
+{
+  "recorded_at": "2026-11-28T01:52:23.296061+00:00",
+  "status": "local_validation_completed",
+  "prompt_version": "2.2.2",
+  "sources": {
+    "created_at": "2026-11-28T01:46:18.669866+00:00",
+    "backend_commit": "686af0c78f0e9bcad88d725f7a509c6330e9f26d",
+    "frontend_commit": "5e55282653962f55a452189ca093d05f654dd269",
+    "ia_published_base_commit": "bdfe6aa053f86c7f6448185f12bc7657afbac3a9",
+    "ia_source_uncommitted": true,
+    "merged_backend_frontend_tree": "5fcf4820f711a5675899dfb23818b2c860276e97",
+    "overlay_sha256": {
+      "backend/app/ai.py": "12ad7717eb574841c2ca2c6dc9af5853dafafb2dcaf77327c670d4179832b7fb",
+      "backend/tests/test_ai.py": "e2be75706c50336e68ebdd2e1ba4fb633197db8c9bd238f1360c00adf58e1160",
+      "backend/tests/test_eval.py": "58c494f8c14be6d406bdae36e6633f041d741da3fa07025ffb8b385f5c5ec5d6",
+      "eval/run_eval.py": "11e75d1a62e56d8326d513e29c9ea03966409c3e413e5158a93bcbc9757b0243",
+      "eval/cases-c3-regressao.json": "5524892178f4884ba9967e35862d774be6bc6043d530f9ccde786d969459638a",
+      "eval/cases-c3-estabilidade.json": "88232af88855b20861ccadf6c5a8a6228c6b2870af187e0d2779a4fb866d7aa6"
+    }
+  },
+  "checks": [
+    {
+      "name": "backend_integrated",
+      "passed": 70,
+      "skipped": 1,
+      "mode": "mocks/SQLite",
+      "log": "backend.log"
+    },
+    {
+      "name": "postgres",
+      "passed": 1,
+      "version": "17.12",
+      "mode": "disposable PostgreSQL; provider mocked",
+      "log": "postgres.log"
+    },
+    {
+      "name": "frontend",
+      "passed": 29,
+      "mode": "mocks/jsdom",
+      "log": "frontend.log",
+      "note": "same frontend commit 5e55282; execution in 2.2.0 snapshot, frontend unchanged since"
+    },
+    {
+      "name": "build",
+      "exit_code": 0,
+      "log": "build.log",
+      "note": "same frontend; temporary local dependency aliases caused larger bundle warning"
+    }
+  ],
+  "metrics": {
+    "total": 5,
+    "valid_responses": 1.0,
+    "valid_response_count": 5,
+    "valid_response_denominator": 5,
+    "service_failure_count": 0,
+    "service_failure_denominator": 5,
+    "service_failure_rate": 0.0,
+    "failure_categories": {},
+    "classification_accuracy": 0.8,
+    "classification_correct_count": 4,
+    "classification_denominator": 5,
+    "false_positive_rate": 0.0,
+    "false_positive_count": 0,
+    "false_positive_denominator": 1,
+    "false_negative_rate": 0.0,
+    "false_negative_count": 0,
+    "false_negative_denominator": 2,
+    "adversarial_expected_classification": 1.0,
+    "adversarial_correct_count": 1,
+    "adversarial_denominator": 1,
+    "group_consistency": 1.0,
+    "consistent_group_count": 1,
+    "comparable_group_denominator": 1,
+    "repeat_stability": null,
+    "stable_repeat_count": 0,
+    "repeat_stability_denominator": 0,
+    "repeat_groups_excluded_due_to_errors": 0,
+    "repeat_groups_excluded_due_to_incomplete_runs": 0,
+    "group_excluded_due_to_errors": 0,
+    "average_latency_seconds": 6.203,
+    "qualitative_review": "Revisar manualmente linguagem, justificativas, evidências, recomendações e alucinações.",
+    "adversarial_obedience_review": "N/A até revisão humana: obediência indevida, formato/idioma e contaminação da justificativa; classificação de risco não basta."
+  },
+  "quality_review": "eval/revisao-final-222-assistida.json",
+  "evaluation": "eval/results-c3-final-222.json",
+  "freeze": "eval/congelamento-final-c3-222.json",
+  "history": {
+    "220": {
+      "attempts": 15,
+      "valid": 12,
+      "evidence_errors": 3,
+      "path": "eval/results-c3-final-220.json"
+    },
+    "221": {
+      "attempts": 1,
+      "provider_status": 400,
+      "path_branch": "c3-ia-avaliacao",
+      "path": "eval/results-c3-regressao-221.json"
+    },
+    "222_regression": {
+      "attempts": 1,
+      "valid": 1,
+      "path_branch": "c3-ia-avaliacao",
+      "path": "eval/results-c3-regressao-222.json"
+    }
+  },
+  "evidence_sha256": {
+    "backend.log": "d9a0358fd5d44b417df4827d0c8f54bb61acf4f11aedcd9680f475e7e6ce87e6",
+    "build.log": "33964c94d8072893dcd6f8f672eb01637bf6a1d4866400a7f15a0b6422b4fe31",
+    "frontend.log": "deeaa1703ebfadc24a49ed7d1caec6165e8205f1fd89f9a035166aa2976a2ac2",
+    "postgres.log": "2158d86339785508fbf86036d335409ffb093c6d524c5a1c398a18aebf38d71e"
+  },
+  "quality_review_method": "Assisted assessment by Codex, which also supported implementation."
+}

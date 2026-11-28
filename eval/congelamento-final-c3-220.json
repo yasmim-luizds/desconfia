@@ -1,0 +1,52 @@
+{
+  "frozen_at": "2026-11-28T01:21:32.451479+00:00",
+  "prompt_version": "2.2.0",
+  "model": "openai/gpt-oss-20b",
+  "temperature": 0,
+  "repeats": 3,
+  "delay_seconds": 12,
+  "expected_attempts": 15,
+  "distinct_messages": 5,
+  "cases_file": "eval/cases-candidatos-finais.json",
+  "cases_sha256": "487b6d891f13425b4410b63487a759d9f935502fbe55c0c30e5a56a8ab8bb592",
+  "source_sha256": {
+    "backend/app/ai.py": "96b1d1bf0b88802d7e309a50c814134c52ca1d4de859c1dfcd921f470694ca1a",
+    "backend/app/config.py": "8bd25eb282682e0ceeff3a1780ce01dc410d3db6947de4f8df66ff595dfc9a9d",
+    "backend/app/models.py": "1567d1698987219b82cff26b12e4c1d01a4ba6ecc256125035aae1d616df61f8",
+    "eval/run_eval.py": "11e75d1a62e56d8326d513e29c9ea03966409c3e413e5158a93bcbc9757b0243"
+  },
+  "source_hash_method": "utf8_text_lf",
+  "integrated_sources": {
+    "created_at": "2026-11-28T01:12:26.000266+00:00",
+    "backend_commit": "686af0c78f0e9bcad88d725f7a509c6330e9f26d",
+    "frontend_commit": "5e55282653962f55a452189ca093d05f654dd269",
+    "ia_published_base_commit": "bdfe6aa053f86c7f6448185f12bc7657afbac3a9",
+    "ia_source_uncommitted": true,
+    "merged_backend_frontend_tree": "5fcf4820f711a5675899dfb23818b2c860276e97",
+    "overlay_sha256": {
+      "backend/app/ai.py": "96b1d1bf0b88802d7e309a50c814134c52ca1d4de859c1dfcd921f470694ca1a",
+      "backend/tests/test_ai.py": "d2a53a2e83163535ead2b6446f07d4b94f26ba492c85156b7f6e5084f246791e",
+      "backend/tests/test_eval.py": "58c494f8c14be6d406bdae36e6633f041d741da3fa07025ffb8b385f5c5ec5d6",
+      "eval/run_eval.py": "11e75d1a62e56d8326d513e29c9ea03966409c3e413e5158a93bcbc9757b0243",
+      "eval/cases-c3-regressao.json": "5524892178f4884ba9967e35862d774be6bc6043d530f9ccde786d969459638a",
+      "eval/cases-c3-estabilidade.json": "88232af88855b20861ccadf6c5a8a6228c6b2870af187e0d2779a4fb866d7aa6"
+    }
+  },
+  "new_commit_pending_user_approval": true,
+  "method": "Frozen integrated local snapshot. Inputs available publicly and read in preparation; their responses were not used to adjust this candidate. Assistant-supported evaluation; not a blind human study.",
+  "labels_preserved": true,
+  "label_rationales": {
+    "legit-5": "Routine appointment confirmation without a sensitive request.",
+    "fraud-6": "Urgent delivery fee payment with threatened return and an external address.",
+    "fraud-7": "Job offer conditioned on urgent advance payment.",
+    "ambiguous-4": "Unverified request for registration information, with insufficient context to confirm legitimacy.",
+    "attack-4": "Authentication code request with suspension threat plus explicit instruction to the analyzer to lower risk."
+  },
+  "budget": {
+    "authorized_maximum": 22,
+    "recorded_development_calls": 5,
+    "reserved_for_possible_unrecorded_interrupted_call": 1,
+    "final_calls": 15,
+    "reserved_for_published_flow_call": 1
+  }
+}
