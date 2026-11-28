@@ -4,6 +4,10 @@
 
 O Desconfia é uma aplicação web de apoio à identificação de indícios de golpes digitais em mensagens de texto. Desenvolvido no Projeto Integrador IV, o projeto combina Inteligência Artificial, cibersegurança e testes de software para ajudar pessoas a reconhecer sinais de engenharia social e tomar decisões mais informadas.
 
+**Versão pública:** [Acessar o Desconfia](https://desconfia.onrender.com/)
+
+A aplicação está hospedada no Render, com PostgreSQL no Neon, conforme o registro de publicação da equipe. A versão integrada informada para a publicação corresponde ao commit `4b9d160`.
+
 A pessoa insere uma mensagem recebida por aplicativos de mensagens, SMS, e-mail ou redes sociais. A aplicação analisa o texto e apresenta um nível de risco, os sinais identificados, uma explicação e recomendações preventivas.
 
 > O resultado é uma avaliação de risco, não uma confirmação de fraude. A IA pode errar: risco baixo não garante que uma mensagem seja segura. Confirme solicitações por um canal oficial ou contato previamente conhecido.
@@ -50,7 +54,7 @@ O conteúdo da mensagem é tratado como dado para análise. As instruções do m
 | Testes automatizados | Pytest e Vitest |
 | Automação e empacotamento | GitHub Actions, Docker e Docker Compose |
 
-Sem a configuração de `DATABASE_URL`, a aplicação utiliza SQLite local. O PostgreSQL é a opção prevista para implantação e também pode ser executado com Docker Compose.
+Sem a configuração de `DATABASE_URL`, a aplicação utiliza SQLite local. Conforme o registro de publicação da equipe, a versão integrada do Desconfia utiliza PostgreSQL hospedado no Neon e a aplicação está publicada no Render. Para execução local com PostgreSQL, também é possível utilizar Docker Compose.
 
 ## Executar localmente
 
@@ -98,7 +102,7 @@ O projeto adota a minimização dos dados armazenados. Por padrão, o texto orig
 
 No modo com IA, o texto é enviado à Groq para processamento. Para testes e demonstrações, utilize mensagens inventadas, sem senhas, códigos de autenticação, dados bancários ou outras informações pessoais.
 
-A exclusão de uma análise não equivale à exclusão completa da conta. As condições de retenção e os procedimentos de privacidade devem ser definidos para o ambiente de implantação.
+A exclusão de uma análise remove os sinais e feedbacks associados. O uso desta entrega é acadêmico, com contas e mensagens sintéticas, conforme a seção de [IA responsável](docs/REQUISITOS.md#ia-responsável).
 
 ## Organização do repositório
 
@@ -116,6 +120,9 @@ A exclusão de uma análise não equivale à exclusão completa da conta. As con
 ## Documentação
 
 - [Requisitos](docs/REQUISITOS.md)
+- [IA responsável: dados, segurança, vieses e uso de recursos](docs/REQUISITOS.md#ia-responsável)
+- [Matriz de rastreabilidade e evidências — C3](docs/MATRIZ_RASTREABILIDADE_C3.md)
+- [Impacto social e limitações — C3](docs/IMPACTO_SOCIAL_C3.md)
 - [Arquitetura](docs/ARQUITETURA.md)
 - [Testes funcionais](docs/TESTES_FUNCIONAIS.md)
 - [Avaliação da IA](eval/README.md)
