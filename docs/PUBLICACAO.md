@@ -1,96 +1,140 @@
 # Publicação do Desconfia — C3
 
-O Desconfia possui uma versão integrada publicada em https://desconfia.onrender.com/, conforme o registro de publicação da equipe. A aplicação utiliza hospedagem no Render e PostgreSQL no Neon. A versão publicada informada corresponde ao commit `4b9d160`, após a integração dos Pull Requests #8, #9, #10 e #11.
+## Versão publicada
 
-Este guia reúne orientações de execução local, configuração do ambiente e verificações de publicação. Os procedimentos com Docker Compose apresentados nas seções seguintes referem-se ao ambiente local e não devem ser confundidos com a infraestrutura hospedada no Render e no Neon.
+- Aplicação: [https://desconfia.onrender.com/](https://desconfia.onrender.com/).
+- Hospedagem: serviço web Docker no Render.
+- Banco persistente: PostgreSQL no Neon.
+- Código publicado: [`4b9d1603d5dcdb884e25d659fd15de5e97182fff`](https://github.com/yasmim-luizds/desconfia/commit/4b9d1603d5dcdb884e25d659fd15de5e97182fff), após os PRs #8, #9, #10 e #11.
+- Verificação automática dessa versão: [GitHub Actions — backend, frontend, PostgreSQL e imagem Docker aprovados](https://github.com/yasmim-luizds/desconfia/actions/runs/46099940488).
 
-## 1. Preparar o repositório
+O uso desta entrega é acadêmico, com contas e mensagens sintéticas.
 
-Execute os comandos a partir da raiz do repositório, onde ficam `Dockerfile`, `compose.yaml`, `frontend/`, `backend/`, `eval/` e `docs/`. A instalação manual usa SQLite quando `DATABASE_URL` não está definida. O Compose usa PostgreSQL para a validação específica desse banco. Não envie `.env`, `.venv`, `node_modules`, arquivos `.db` ou credenciais.
+## Configuração do serviço no Render
 
-## 2. Configurar variáveis locais
+O `Dockerfile` da raiz compila o frontend e prepara o backend. O FastAPI serve a interface e a API no mesmo endereço. O banco Neon permanece externo ao container da aplicação.
 
-Copie `.env.example` para `.env` na raiz do projeto. Gere valores fortes e diferentes para a senha do PostgreSQL e para a chave da aplicação, por exemplo:
+| Campo | Configuração do projeto |
+|---|---|
+| Repositório | `yasmim-luizds/desconfia` |
+| Branch de integração | `main` |
+| Runtime / Language | Docker |
+| Root Directory | Raiz do repositório; campo vazio |
+| Dockerfile Path | `./Dockerfile` |
+| Docker Command | Usar o `CMD` do Dockerfile: `sh ./start.sh` |
+| Health Check Path | `/health` |
+
+No serviço existente, manter o banco Neon e os segredos já cadastrados. Para reproduzir a configuração, usar as variáveis abaixo em **Environment**. Esta tabela informa nomes e requisitos; os valores secretos são preenchidos no painel.
+
+| Variável | Valor ou origem |
+|---|---|
+| `APP_ENV` | `production` |
+| `AI_MODE` | `groq` |
+| `GROQ_MODEL` | `openai/gpt-oss-20b`, modelo da avaliação 2.2.2 |
+| `GROQ_API_KEY` | Chave da conta Groq, cadastrada somente no ambiente do backend |
+| `DATABASE_URL` | Conexão PostgreSQL do Neon com TLS; o backend aceita `postgresql://` ou `postgresql+psycopg://` |
+| `DESCONFIA_SECRET_KEY` | Segredo persistente com pelo menos 32 caracteres |
+| `RUN_MIGRATIONS` | `true` para executar Alembic antes da inicialização em banco novo ou já versionado, com uma instância |
+| `AI_GLOBAL_PER_MINUTE` | Padrão do código: `20`; limite compartilhado de tentativas |
+| `AI_GLOBAL_PER_DAY` | Padrão do código: `200`; limite compartilhado de tentativas |
+| `CORS_ORIGINS` | Configurar origens HTTPS exatas quando houver frontend separado |
+
+O Render fornece `PORT`, que é lida por `backend/start.sh`. O processo inicia um worker do Uvicorn. O segredo da aplicação deve permanecer estável entre publicações para preservar a validação dos tokens emitidos.
+
+Para gerar um segredo em ambiente privado:
 
 ```bash
-python -c "import secrets; print(secrets.token_urlsafe(32))"
+python -c "import secrets; print(secrets.token_urlsafe(48))"
 ```
 
-Preencha o arquivo `.env` localmente:
+## Publicar ou atualizar por commit
+
+1. Abrir o serviço Desconfia no [painel do Render](https://dashboard.render.com/).
+2. Em **Settings**, conferir a branch `main`, o runtime Docker e o healthcheck `/health`.
+3. Em **Environment**, conferir as variáveis da tabela, mantendo conexão e segredos do serviço existente.
+4. Em **Deploys**, selecionar **Manual Deploy → Deploy a specific commit**.
+5. Informar o SHA aprovado. Na publicação registrada pela equipe foi usado `4b9d1603d5dcdb884e25d659fd15de5e97182fff`.
+6. Selecionar **Deploy Commit** e acompanhar os logs até **Live**. A opção de commit específico desativa os deploys automáticos no painel.
+7. Conferir se **Source** identifica o commit escolhido e testar o fluxo descrito na próxima seção.
+
+O Render constrói a imagem pelo `Dockerfile`. O script de início executa as migrações quando configurado e inicia o servidor na porta fornecida pelo serviço. O PostgreSQL persiste no Neon entre substituições do container.
+
+Para atualizações posteriores, usar um commit com verificações aprovadas. A opção **Deploy latest commit** publica o último commit da branch vinculada; **Restart service** reinicia a versão já publicada. As opções estão descritas na [documentação oficial do Render](https://render.com/docs/deploys).
+
+## Banco, migrações e recuperação
+
+As migrações são versionadas em `backend/migrations/`. Os comandos abaixo são executados dentro de `backend/`, com dependências instaladas e `DATABASE_URL` definida em ambiente privado.
+
+Banco novo ou já versionado:
+
+```bash
+python -m alembic upgrade head
+python -m alembic current
+```
+
+Na implantação de instância única, `RUN_MIGRATIONS=true` executa o primeiro comando antes do servidor. Para adotar banco legado da C2, realizar backup e conferir o procedimento em uma cópia isolada:
+
+```bash
+python -m app.adopt_baseline
+python -m alembic upgrade head
+```
+
+A adoção compara o esquema legado antes de registrar a revisão inicial. O [README do backend](../backend/README.md#migrações-do-banco) descreve os critérios. Em recuperação, conferir a compatibilidade entre código e esquema; as migrações bloqueiam downgrade destrutivo. Restaurar backups em uma base isolada permite verificar os registros antes de usar a base recuperada.
+
+A equipe preservou uma [captura do teste de restauração no Neon em 14/11/2026](evidencias/2026-11-14_desconfia_teste-restauracao-neon.png). Esse registro tem data e escopo próprios.
+
+## Evidências da publicação
+
+A equipe forneceu quatro capturas do teste da versão publicada: deploy no Render, resultado da análise, histórico e confirmação do feedback. O deploy identifica o commit `4b9d160`, e os logs exibem respostas HTTP 200 em `/health`. A mensagem fictícia recebeu risco alto, com pedido financeiro e isolamento como sinais.
+
+As verificações executadas foram:
+
+| Verificação | Resultado registrado |
+|---|---|
+| Publicação Docker no Render | Deploy concluído e serviço Live, commit `4b9d160` |
+| Healthcheck | HTTP 200 |
+| Mensagem sintética | Risco alto, sinais e recomendação preventiva apresentados |
+| Histórico | Análise registrada e exibida na conta de teste |
+| Feedback | Confirmação de registro apresentada |
+| CI do commit publicado | Backend, frontend, PostgreSQL e imagem Docker aprovados |
+
+A [execução do CI](https://github.com/yasmim-luizds/desconfia/actions/runs/46099940488), os [testes locais integrados](TESTES_C3.md) e a [avaliação da IA](AVALIACAO_FINAL_C3.md) têm escopos identificados. O teste funcional no site é separado da rodada de cinco mensagens da avaliação 2.2.2.
+
+## Conferência do ambiente publicado
+
+Abrir [`/health`](https://desconfia.onrender.com/health) e [`/config`](https://desconfia.onrender.com/config). O primeiro verifica a saúde do serviço; o segundo informa `ai_mode` e o limite de caracteres. Em produção, o modo esperado é `groq`.
+
+Com conta e mensagem sintéticas, entrar, analisar, abrir o histórico e enviar feedback. Conferir o resultado antes de registrar uma nova evidência. O painel **Deploys** identifica a versão em uso e reúne os logs dessa publicação.
+
+## Execução local com Docker Compose
+
+Este procedimento executa a aplicação e um PostgreSQL 17 locais. A instalação manual descrita no [README principal](../README.md#executar-localmente) usa SQLite quando `DATABASE_URL` está ausente.
+
+Na raiz do repositório, copiar `.env.example` para `.env` e preencher localmente:
 
 ```dotenv
-POSTGRES_PASSWORD=<senha-aleatoria-do-banco>
-DESCONFIA_SECRET_KEY=<chave-aleatoria-da-aplicacao>
+POSTGRES_PASSWORD=<senha-aleatoria-local>
+DESCONFIA_SECRET_KEY=<segredo-aleatorio-local>
 AI_MODE=demo
 GROQ_API_KEY=
 GROQ_MODEL=openai/gpt-oss-20b
 ```
 
-`AI_MODE=demo` permite demonstrar a interface sem uma chave externa; não representa uma análise real por IA. Se o grupo decidir testar a integração real, configure `AI_MODE=groq` e `GROQ_API_KEY` somente no ambiente local protegido, confira quota e custos, e não copie a chave para o front-end ou para o GitHub.
-
-## 3. Iniciar aplicação e PostgreSQL
-
-Valide a configuração e inicie os containers:
+O Compose recebe `AI_MODE=demo` do arquivo e utiliza PostgreSQL. Para análise real, configurar `AI_MODE=groq` e uma chave Groq válida no arquivo privado.
 
 ```bash
 docker compose config -q
 docker compose up --build -d
 docker compose ps
-```
-
-O Compose usa PostgreSQL 17, aguarda o healthcheck do banco antes de iniciar a aplicação e grava os dados no volume nomeado `postgres_data`. Confira a API e o banco:
-
-```bash
 curl -fsS http://127.0.0.1:8000/health
 docker compose exec database pg_isready -U desconfia -d desconfia
 ```
 
-Na interface, use apenas contas de teste e mensagens inventadas. A URL `127.0.0.1` só funciona no computador local; outro dispositivo não consegue acessá-la como uma URL pública.
+Abrir [http://127.0.0.1:8000](http://127.0.0.1:8000). O volume `postgres_data` armazena os registros do banco local. `docker compose restart web` reinicia a aplicação; `docker compose down` encerra os containers preservando esse volume.
 
-## 4. Testar os fluxos locais
+## Referências
 
-1. Cadastre uma conta fictícia, entre e saia.
-2. Analise uma mensagem sintética e confira classificação, sinais, explicação e recomendação.
-3. Opte por guardar a mensagem e confirme que ela aparece no histórico dessa conta.
-4. Envie feedback, recarregue a página e confira o registro.
-5. Crie uma segunda conta e confirme que ela não vê o histórico da primeira.
-6. Exclua a análise de teste e confirme que ela desapareceu do histórico.
-
-O sistema oferece exclusão de análise. O procedimento para excluir uma conta completa ainda está em avaliação pelo grupo; não prometa esse fluxo na apresentação.
-
-## 5. Testar persistência
-
-Com uma análise sintética e feedback salvos, reinicie o serviço web e volte a consultar o histórico:
-
-```bash
-docker compose restart web
-```
-
-Confira também a persistência após reiniciar o PostgreSQL e depois a aplicação:
-
-```bash
-docker compose restart database
-docker compose restart web
-```
-
-Entre novamente e confirme que a conta e os registros de teste continuam no histórico. Para parar os containers preservando os dados, use `docker compose down`. **Não use `docker compose down -v`** quando quiser manter o banco: a opção `-v` remove `postgres_data`.
-
-## 6. Resultado, evidências e conferência antes da gravação
-
-### Publicação integrada da C3
-
-Conforme o comunicado da equipe, a versão integrada do Desconfia foi publicada em https://desconfia.onrender.com/, utilizando Render para hospedagem e PostgreSQL no Neon. A publicação foi identificada pelo commit `4b9d160`, após a integração dos PRs #8, #9, #10 e #11.
-
-As verificações comunicadas incluem healthcheck HTTP 200, análise de mensagem sintética com resultado de risco alto, registro no histórico e envio de feedback. Também foi informado que os testes de backend, frontend, PostgreSQL e build Docker passaram no GitHub Actions.
-
-Esses resultados são provenientes das verificações da equipe, não de uma execução independente realizada nesta revisão documental. As evidências correspondentes devem permanecer vinculadas ao relatório de validação da publicação e à execução do GitHub Actions.
-
-O registro de 27/10/2026 informa que a imagem foi construída, PostgreSQL 17.11 ficou saudável, 12 verificações da API passaram e os dados sintéticos persistiram após reinícios. A instalação manual no computador da Yasmin usa SQLite quando `DATABASE_URL` não está configurada; ela não deve ser descrita como execução PostgreSQL.
-
-O pacote de documentação contém o resumo dos resultados, mas não a saída bruta do terminal nem capturas do Docker/PostgreSQL. `docs/VALIDACAO_PUBLICACAO.md` lista os comandos seguros para registrar essa evidência no computador em que a validação ocorreu. As capturas funcionais existentes demonstram interface e fluxos, não a persistência PostgreSQL.
-
-Não é preciso repetir a bateria completa antes da gravação. No computador que será usado, confirme a configuração escolhida, confira `/health` e `/config`, e faça um fluxo curto com dados sintéticos: entrar ou cadastrar, analisar, abrir histórico e conferir feedback. Se usar SQLite, confirme o modo `demo`; se usar Compose, confirme que o banco ativo é PostgreSQL e que está saudável.
-
-## 7. Privacidade e decisões do grupo
-
-O grupo informou que retenção de dados, contato para questões de privacidade, exclusão completa de conta e tratamento de backups/logs continuam em avaliação. Esses pontos ficam em aberto até uma decisão do grupo. Use somente contas e mensagens sintéticas durante testes e apresentações.
+- [Arquitetura](ARQUITETURA.md)
+- [IA responsável e privacidade](REQUISITOS.md#ia-responsável)
+- [Validação da publicação e histórico C2](VALIDACAO_PUBLICACAO.md)
+- [Render: publicação](https://render.com/docs/deploys) e [Docker](https://render.com/docs/docker)

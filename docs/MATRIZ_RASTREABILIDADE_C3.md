@@ -57,16 +57,16 @@ A infraestrutura informada utiliza Render e PostgreSQL no Neon. A versão public
 
 O comunicado registra healthcheck HTTP 200, análise de mensagem sintética, histórico e feedback, além de aprovação das verificações de backend, frontend, PostgreSQL e build Docker no GitHub Actions.
 
-Esses resultados foram comunicados pela equipe. Não representam testes independentes executados nesta revisão documental.
+Os registros da equipe estão reunidos no [guia de publicação](PUBLICACAO.md#evidências-da-publicação). O [CI do commit publicado](https://github.com/yasmim-luizds/desconfia/actions/runs/46099940488) identifica os jobs aprovados.
 
-## 6. Limitações e pendências
+## 6. Limitações e escopo
 
 - A avaliação da IA considera somente cinco mensagens sintéticas e uma execução por mensagem.
 - A revisão qualitativa registrada foi assistida por Codex, que também apoiou o desenvolvimento.
 - O teste PostgreSQL documentado em `TESTES_C3.md` utilizou ambiente local descartável e não comprova, isoladamente, o banco Neon de produção.
 - Os registros históricos da C2 foram preservados e não devem ser confundidos com as verificações da C3.
 - As evidências de publicação e de GitHub Actions precisam permanecer associadas aos respectivos registros.
-- As decisões institucionais sobre retenção de dados, contato de privacidade, exclusão completa da conta e tratamento de backups/logs devem ser confirmadas pelo grupo antes de afirmar que estão concluídas.
+- O uso desta entrega é acadêmico, com contas e mensagens sintéticas; os cuidados estão consolidados em [IA responsável](REQUISITOS.md#ia-responsável).
 
 ## 7. Referências
 

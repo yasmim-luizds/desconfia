@@ -102,7 +102,7 @@ O projeto adota a minimização dos dados armazenados. Por padrão, o texto orig
 
 No modo com IA, o texto é enviado à Groq para processamento. Para testes e demonstrações, utilize mensagens inventadas, sem senhas, códigos de autenticação, dados bancários ou outras informações pessoais.
 
-A exclusão de uma análise não equivale à exclusão completa da conta. As condições de retenção e os procedimentos de privacidade devem ser definidos para o ambiente de implantação.
+A exclusão de uma análise remove os sinais e feedbacks associados. O uso desta entrega é acadêmico, com contas e mensagens sintéticas, conforme a seção de [IA responsável](docs/REQUISITOS.md#ia-responsável).
 
 ## Organização do repositório
 
@@ -120,6 +120,7 @@ A exclusão de uma análise não equivale à exclusão completa da conta. As con
 ## Documentação
 
 - [Requisitos](docs/REQUISITOS.md)
+- [IA responsável: dados, segurança, vieses e uso de recursos](docs/REQUISITOS.md#ia-responsável)
 - [Matriz de rastreabilidade e evidências — C3](docs/MATRIZ_RASTREABILIDADE_C3.md)
 - [Impacto social e limitações — C3](docs/IMPACTO_SOCIAL_C3.md)
 - [Arquitetura](docs/ARQUITETURA.md)

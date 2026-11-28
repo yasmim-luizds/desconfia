@@ -22,7 +22,7 @@ Foram comunicadas as seguintes verificações da versão integrada:
 - Envio de feedback.
 - Testes de backend, frontend, PostgreSQL e build Docker aprovados no GitHub Actions.
 
-Os resultados acima foram informados pela equipe e não representam uma nova execução independente nesta revisão documental. As evidências devem ser conferidas nos registros da publicação e do GitHub Actions.
+A origem das verificações é a execução da equipe na versão publicada. O [guia de publicação](PUBLICACAO.md#evidências-da-publicação) reúne o registro do fluxo, e a [execução do GitHub Actions do commit 4b9d160](https://github.com/yasmim-luizds/desconfia/actions/runs/46099940488) identifica as verificações automáticas aprovadas.
 
 As referências posteriores deste documento à hospedagem ainda planejada e aos PRs abertos correspondem à situação histórica de outubro de 2026.
 

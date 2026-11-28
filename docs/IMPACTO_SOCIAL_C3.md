@@ -67,7 +67,7 @@ Esses resultados contribuem para verificar funcionalidades e identificar limita�
 - Os resultados da avaliação da IA são provenientes de uma amostra pequena de mensagens sintéticas.
 - As verificações técnicas não substituem estudos de usabilidade e impacto com participantes reais.
 - O uso de mensagens com informações pessoais exige cuidados de privacidade.
-- As definições institucionais sobre retenção de dados, contato de privacidade e exclusão completa da conta devem ser confirmadas pelo grupo.
+- As demonstrações desta entrega utilizam contas e mensagens sintéticas, conforme os [cuidados de IA responsável](REQUISITOS.md#ia-responsável).
 
 ## 8. Possibilidades de avaliação futura
 
