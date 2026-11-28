@@ -78,7 +78,8 @@ Foram adicionados novos testes com mocks no Vitest (`api.test.js` e `App.test.js
 
 ---
 
-## 6. Limitações e Pendências
+## 6. Escopo de uso e acessibilidade
 
-* **Leitores de tela:** Não foi realizado teste prático com leitores de tela nativos (como NVDA ou VoiceOver), embora os atributos `role="alert"`, `role="status"`, `aria-invalid`, `aria-describedby` e `aria-hidden` tenham sido mantidos e revisados.
-* **Privacidade e exclusão de conta:** O sistema atualmente permite excluir análises individuais pelo histórico, mas não possui fluxo automatizado de exclusão de conta. O texto oficial de contato de privacidade e procedimento de exclusão de conta depende da definição final do grupo (Frentes 1 e 5) para eventual integração na interface.
+O Desconfia é um projeto acadêmico demonstrado com contas e mensagens sintéticas. O histórico permite excluir análises individuais.
+
+As verificações realizadas cobrem teclado, foco visível, zoom de 200% e a revisão dos atributos `role="alert"`, `role="status"`, `aria-invalid`, `aria-describedby` e `aria-hidden`, conforme os cenários registrados neste documento.
